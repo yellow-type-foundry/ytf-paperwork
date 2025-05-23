@@ -12,8 +12,8 @@ export default function PaperworkDashboard() {
         <p className="text-xl text-muted-foreground mt-2">Document Generator</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/eula" className="block">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Link href="/eula-editor" className="block">
           <Card className="h-full transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-2xl font-bold">EULA</CardTitle>
@@ -21,7 +21,7 @@ export default function PaperworkDashboard() {
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base min-h-[60px]">
-                Generate End User License Agreements for font licensing.
+                Generate and preview End User License Agreements for font licensing.
               </CardDescription>
               <Button className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600">Create EULA</Button>
             </CardContent>
