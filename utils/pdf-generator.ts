@@ -25,14 +25,44 @@ interface QuotationData {
   total: number
 }
 
-export async function generateQuotationPDF(formData: QuotationData): Promise<Blob> {
+interface FormItem {
+  typeface: string
+  licenseType: string
+  durationType: string
+  durationYears: number
+  languageCut: string
+  fileFormats: string[]
+  amount: number
+}
+
+export async function generateQuotationPDF(formData: any): Promise<Blob> {
   try {
     console.log("Starting PDF generation...")
+    
+    // Transform form data to match QuotationDocument interface
+    const transformedData: QuotationData = {
+      quotationNumber: formData.quotationNumber,
+      quotationDate: formData.quotationDate,
+      clientName: formData.clientName,
+      clientEmail: formData.clientEmail,
+      clientAddress: formData.clientAddress,
+      businessSize: businessSizes.find(size => size.id === formData.businessSize),
+      items: formData.items.map((item: FormItem) => ({
+        typeface: item.typeface,
+        licenseType: item.licenseType,
+        duration: item.durationType === "perpetual" ? "Perpetual" : `${item.durationYears} Years`,
+        languageCut: item.languageCut,
+        fileFormats: item.fileFormats.join(", "),
+        amount: item.amount
+      })),
+      subtotal: formData.subtotal,
+      total: formData.total
+    }
     
     // Create the PDF document
     const blob = await pdf(
       React.createElement(Document, null,
-        React.createElement(QuotationDocument, { data: formData })
+        React.createElement(QuotationDocument, { data: transformedData })
       )
     ).toBlob()
     
