@@ -643,12 +643,8 @@ export default function QuotationPage() {
 
     try {
       console.log("Starting PDF generation...")
-      const pdf = await generateQuotationPDF(formData)
+      const blob = await generateQuotationPDF(formData)
       console.log("PDF generated successfully")
-
-      // Create blob from PDF
-      const blob = pdf.output("blob")
-      console.log("Blob created successfully")
 
       // Create URL for blob
       blobUrl = URL.createObjectURL(blob)
