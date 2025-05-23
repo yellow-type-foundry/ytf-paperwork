@@ -1,265 +1,286 @@
 "use client"
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer"
+import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer"
+
+// Define types
+interface BusinessSize {
+  name: string
+  description: string
+}
+
+interface QuotationItem {
+  typeface: string
+  licenseType: string
+  duration: string
+  languageCut: string
+  fileFormats: string
+  amount: number
+}
+
+interface QuotationData {
+  quotationNumber: string
+  quotationDate: string
+  clientName: string
+  clientEmail: string
+  clientAddress?: string
+  businessSize?: BusinessSize
+  items: QuotationItem[]
+  subtotal: number
+  total: number
+}
+
+// Register fonts
+Font.register({
+  family: "YTF Oldman",
+  src: "/fonts/YTFOldman-Bold.woff2",
+  fontWeight: "bold",
+})
+
+Font.register({
+  family: "YTF Grand",
+  src: "/fonts/YTFGrand123-Regular.woff2",
+})
+
+Font.register({
+  family: "YTF VangMono",
+  src: "/fonts/YTFVangMono-Regular.woff2",
+})
 
 // Create styles
 const styles = StyleSheet.create({
   page: {
-    padding: 50,
-    fontFamily: "Helvetica",
+    padding: 40,
+    fontFamily: "YTF Grand",
+    fontSize: 14,
+    lineHeight: 1.6,
   },
   header: {
-    marginBottom: 30,
-    borderBottom: "1px solid #EEEEEE",
-    paddingBottom: 10,
-  },
-  logo: {
-    width: 120,
-    marginBottom: 10,
+    marginBottom: 40,
+    alignItems: "center",
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#F59E0B", // Yellow color
+    fontFamily: "YTF Oldman",
+    fontSize: 32,
+    lineHeight: 1.1,
+    letterSpacing: -0.015,
+    marginBottom: 16,
+    textTransform: "uppercase",
   },
   subtitle: {
-    fontSize: 14,
-    marginBottom: 5,
-    color: "#6B7280", // Gray color
+    fontFamily: "YTF VangMono",
+    fontSize: 12,
+    lineHeight: 1.4,
+    letterSpacing: -0.01,
+    textTransform: "uppercase",
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#F59E0B", // Yellow color
-  },
-  text: {
-    fontSize: 10,
-    marginBottom: 5,
-    lineHeight: 1.5,
-  },
-  clientInfo: {
-    marginBottom: 20,
-  },
-  clientName: {
+    fontFamily: "YTF VangMono",
     fontSize: 12,
-    fontWeight: "bold",
+    lineHeight: 1.4,
+    letterSpacing: -0.01,
+    textTransform: "uppercase",
+    marginBottom: 8,
   },
-  clientDetail: {
-    fontSize: 10,
-    marginBottom: 3,
-    color: "#6B7280", // Gray color
-  },
-  fontList: {
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  fontItem: {
-    fontSize: 10,
-    marginBottom: 5,
-    paddingLeft: 10,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 30,
-    left: 50,
-    right: 50,
-    textAlign: "center",
-    fontSize: 8,
-    color: "#9CA3AF", // Light gray
+  body: {
+    fontFamily: "YTF Grand",
+    fontSize: 14,
+    lineHeight: 1.6,
+    letterSpacing: 0.0025,
   },
   table: {
-    display: "flex",
-    width: "auto",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#EEEEEE",
-    marginBottom: 20,
+    width: "100%",
+    marginBottom: 32,
+  },
+  tableHeader: {
+    backgroundColor: "#e8eadd",
+    flexDirection: "row",
   },
   tableRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#EEEEEE",
-    borderBottomStyle: "solid",
-  },
-  tableRowHeader: {
-    backgroundColor: "#F9FAFB",
-  },
-  tableCol: {
-    padding: 8,
-  },
-  tableColDescription: {
-    width: "50%",
-  },
-  tableColQuantity: {
-    width: "15%",
-  },
-  tableColPrice: {
-    width: "15%",
-  },
-  tableColTotal: {
-    width: "20%",
+    borderBottomColor: "#e5e7eb",
   },
   tableCell: {
-    fontSize: 10,
+    padding: 12,
+    flex: 1,
   },
   tableCellHeader: {
-    fontSize: 10,
-    fontWeight: "bold",
-    color: "#4B5563",
+    fontFamily: "YTF VangMono",
+    fontSize: 12,
+    lineHeight: 1.4,
+    letterSpacing: -0.01,
+    textTransform: "uppercase",
+  },
+  tableCellBody: {
+    fontFamily: "YTF Grand",
+    fontSize: 14,
+    lineHeight: 1.6,
+    letterSpacing: 0.0025,
   },
   totals: {
-    marginTop: 10,
-    marginLeft: "auto",
-    width: "40%",
+    marginBottom: 32,
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
+    marginBottom: 8,
   },
   totalLabel: {
-    fontSize: 10,
-    fontWeight: "bold",
+    fontFamily: "YTF VangMono",
+    fontSize: 12,
+    lineHeight: 1.4,
+    letterSpacing: -0.01,
+    textTransform: "uppercase",
   },
   totalValue: {
-    fontSize: 10,
+    fontFamily: "YTF Grand",
+    fontSize: 14,
+    lineHeight: 1.6,
+    letterSpacing: 0.0025,
   },
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 5,
-    paddingTop: 5,
-    borderTopWidth: 1,
-    borderTopColor: "#000000",
-    borderTopStyle: "solid",
+    marginTop: 16,
   },
   grandTotalLabel: {
-    fontSize: 12,
+    fontFamily: "YTF Grand",
+    fontSize: 18,
+    lineHeight: 1.2,
     fontWeight: "bold",
   },
   grandTotalValue: {
-    fontSize: 12,
+    fontFamily: "YTF Grand",
+    fontSize: 18,
+    lineHeight: 1.2,
     fontWeight: "bold",
   },
-  notes: {
-    marginTop: 30,
+  footer: {
+    position: "absolute",
+    bottom: 40,
+    left: 40,
+    right: 40,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  footerText: {
+    fontFamily: "YTF VangMono",
     fontSize: 10,
-    color: "#6B7280",
-    lineHeight: 1.5,
+    lineHeight: 1.4,
+    letterSpacing: -0.01,
   },
 })
 
 // Create Document Component
-export const QuotationDocument = ({ data }) => (
+export const QuotationDocument = ({ data }: { data: QuotationData }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Yellow Type Foundry</Text>
-        <Text style={styles.subtitle}>Quotation</Text>
+        <Text style={styles.title}>QUOTATION</Text>
+        <View style={styles.subtitle}>
+          <Text>Quotation Number: {data.quotationNumber}</Text>
+          <Text>Date: {data.quotationDate}</Text>
+        </View>
       </View>
 
       {/* Client Information */}
-      <View style={styles.clientInfo}>
-        <Text style={styles.clientName}>{data.clientName}</Text>
-        <Text style={styles.clientDetail}>{data.clientCompany}</Text>
-        <Text style={styles.clientDetail}>{data.clientEmail}</Text>
-        <Text style={styles.clientDetail}>{data.clientAddress}</Text>
-      </View>
-
-      {/* Quotation Details */}
       <View style={styles.section}>
-        <Text style={styles.text}>Quotation Date: {data.quotationDate}</Text>
-        <Text style={styles.text}>Valid Until: {data.validUntil}</Text>
-        <Text style={styles.text}>Project: {data.projectName}</Text>
-        {data.projectDescription && <Text style={styles.text}>Description: {data.projectDescription}</Text>}
+        <Text style={styles.sectionTitle}>Client Information:</Text>
+        <View style={styles.body}>
+          <Text>Name: {data.clientName}</Text>
+          <Text>Email: {data.clientEmail}</Text>
+          {data.clientAddress && <Text>Address: {data.clientAddress}</Text>}
+        </View>
       </View>
 
-      {/* Selected Fonts */}
-      {data.selectedFonts.length > 0 && (
+      {/* Business Size Information */}
+      {data.businessSize && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Selected Fonts</Text>
-          <View style={styles.fontList}>
-            {data.selectedFonts.map((font, index) => (
-              <Text key={index} style={styles.fontItem}>
-                • {font.label}
-              </Text>
-            ))}
-          </View>
+          <Text style={styles.title}>{data.businessSize.name} License</Text>
+          <Text style={styles.body}>{data.businessSize.description}</Text>
         </View>
       )}
 
       {/* Items Table */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quotation Items</Text>
-        <View style={styles.table}>
-          {/* Table Header */}
-          <View style={[styles.tableRow, styles.tableRowHeader]}>
-            <View style={[styles.tableCol, styles.tableColDescription]}>
-              <Text style={styles.tableCellHeader}>Description</Text>
-            </View>
-            <View style={[styles.tableCol, styles.tableColQuantity]}>
-              <Text style={styles.tableCellHeader}>Quantity</Text>
-            </View>
-            <View style={[styles.tableCol, styles.tableColPrice]}>
-              <Text style={styles.tableCellHeader}>Unit Price</Text>
-            </View>
-            <View style={[styles.tableCol, styles.tableColTotal]}>
-              <Text style={styles.tableCellHeader}>Total</Text>
-            </View>
+      <View style={styles.table}>
+        <View style={styles.tableHeader}>
+          <View style={[styles.tableCell, { flex: 0.5 }]}>
+            <Text style={styles.tableCellHeader}>NO</Text>
           </View>
-
-          {/* Table Rows */}
-          {data.items.map((item, index) => (
-            <View key={index} style={styles.tableRow}>
-              <View style={[styles.tableCol, styles.tableColDescription]}>
-                <Text style={styles.tableCell}>{item.description}</Text>
-              </View>
-              <View style={[styles.tableCol, styles.tableColQuantity]}>
-                <Text style={styles.tableCell}>{item.quantity}</Text>
-              </View>
-              <View style={[styles.tableCol, styles.tableColPrice]}>
-                <Text style={styles.tableCell}>${item.unitPrice.toFixed(2)}</Text>
-              </View>
-              <View style={[styles.tableCol, styles.tableColTotal]}>
-                <Text style={styles.tableCell}>${item.total.toFixed(2)}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Totals */}
-        <View style={styles.totals}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal:</Text>
-            <Text style={styles.totalValue}>${data.subtotal.toFixed(2)}</Text>
+          <View style={styles.tableCell}>
+            <Text style={styles.tableCellHeader}>TYPEFACE</Text>
           </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Tax (10%):</Text>
-            <Text style={styles.totalValue}>${data.tax.toFixed(2)}</Text>
+          <View style={styles.tableCell}>
+            <Text style={styles.tableCellHeader}>LICENSE TYPE</Text>
           </View>
-          <View style={styles.grandTotal}>
-            <Text style={styles.grandTotalLabel}>Total:</Text>
-            <Text style={styles.grandTotalValue}>${data.total.toFixed(2)}</Text>
+          <View style={styles.tableCell}>
+            <Text style={styles.tableCellHeader}>DURATION</Text>
+          </View>
+          <View style={styles.tableCell}>
+            <Text style={styles.tableCellHeader}>LANGUAGES/CUTS</Text>
+          </View>
+          <View style={styles.tableCell}>
+            <Text style={styles.tableCellHeader}>FILE FORMAT</Text>
+          </View>
+          <View style={[styles.tableCell, { flex: 0.8 }]}>
+            <Text style={styles.tableCellHeader}>AMOUNT (USD)</Text>
           </View>
         </View>
+
+        {data.items.map((item: QuotationItem, index: number) => (
+          <View key={index} style={styles.tableRow}>
+            <View style={[styles.tableCell, { flex: 0.5 }]}>
+              <Text style={styles.tableCellBody}>{`0${index + 1}.`}</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.tableCellBody}>{item.typeface}</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.tableCellBody}>{item.licenseType}</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.tableCellBody}>{item.duration}</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.tableCellBody}>{item.languageCut}</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text style={styles.tableCellBody}>{item.fileFormats}</Text>
+            </View>
+            <View style={[styles.tableCell, { flex: 0.8 }]}>
+              <Text style={styles.tableCellBody}>${Number.parseFloat(String(item.amount)).toFixed(2)}</Text>
+            </View>
+          </View>
+        ))}
       </View>
 
-      {/* Notes */}
-      {data.notes && (
-        <View style={styles.notes}>
-          <Text style={styles.sectionTitle}>Notes</Text>
-          <Text>{data.notes}</Text>
+      {/* Totals */}
+      <View style={styles.totals}>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>SUBTOTAL</Text>
+          <Text style={styles.totalValue}>${data.subtotal.toFixed(2)}</Text>
         </View>
-      )}
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>VIETNAM VALUE ADDED TAX (DEDUCTED)</Text>
+          <Text style={styles.totalValue}>$0</Text>
+        </View>
+        <View style={styles.grandTotal}>
+          <Text style={styles.grandTotalLabel}>Total (USD):</Text>
+          <Text style={styles.grandTotalValue}>${data.total.toFixed(2)}</Text>
+        </View>
+        <Text style={[styles.totalValue, { textAlign: "right", marginTop: 8 }]}>
+          ≈ {(data.total * 24500).toLocaleString()} VND
+        </Text>
+      </View>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text>Yellow Type Foundry • www.yellowtypefoundry.com • contact@yellowtypefoundry.com</Text>
+        <Text style={styles.footerText}>©2025 YELLOW TYPE FOUNDRY</Text>
+        <Text style={styles.footerText}>YELLOWTYPE.COM</Text>
+        <Text style={styles.footerText}>STRICTLY CONFIDENTIAL</Text>
       </View>
     </Page>
   </Document>
