@@ -29,7 +29,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
     console.log("Loading fonts...")
     try {
       // Load Vang Mono font
-      const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.woff2")
+      const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.woff2", { cache: "no-store" })
       if (!vangMonoResponse.ok) {
         throw new Error(`Failed to load Vang Mono font: ${vangMonoResponse.status} ${vangMonoResponse.statusText}`)
       }
@@ -37,7 +37,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       console.log("Vang Mono font loaded successfully")
 
       // Load Grand font
-      const grandResponse = await fetch("/fonts/YTFGrand123-Regular.woff2")
+      const grandResponse = await fetch("/fonts/YTFGrand123-Regular.woff2", { cache: "no-store" })
       if (!grandResponse.ok) {
         throw new Error(`Failed to load Grand font: ${grandResponse.status} ${grandResponse.statusText}`)
       }
@@ -66,15 +66,19 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
     // Load logo
     console.log("Loading logo...")
     try {
-      const logoResponse = await fetch("/YTF-LOGO.svg")
+      const logoResponse = await fetch("/YTF-LOGO.svg", { cache: "no-store" })
       if (!logoResponse.ok) {
         throw new Error(`Failed to load logo: ${logoResponse.status} ${logoResponse.statusText}`)
       }
       const logoSvg = await logoResponse.text()
       console.log("Logo loaded successfully")
 
+      // Convert SVG to base64
+      const svgBase64 = window.btoa(logoSvg)
+      const svgDataUrl = `data:image/svg+xml;base64,${svgBase64}`
+
       // Add logo to PDF
-      doc.addImage(logoSvg, "SVG", 20, 20, 40, 40)
+      doc.addImage(svgDataUrl, "PNG", 20, 20, 40, 40)
       console.log("Logo added to PDF successfully")
     } catch (logoError) {
       console.error("Error loading logo:", logoError)
@@ -97,7 +101,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       // Add header
       doc.setFont("YTFGrand", "normal")
       doc.setFontSize(24)
-      doc.text("QUOTATION", 105, 30, { align: "center" })
+      doc.text("QUOTATION", 297.5, 30, { align: "center" })
 
       // Add quotation details
       doc.setFont("YTFVangMono", "normal")
