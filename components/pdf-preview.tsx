@@ -39,94 +39,123 @@ export function PDFPreview({ formData }: { formData: any }) {
     })
     .toUpperCase()
 
-  // Fixed exchange rate for preview
-  const vndAmount = formData.total * 24500
-
   return (
-    <div className="w-[595px] h-[842px] bg-white inline-flex flex-col justify-start items-center overflow-hidden p-8">
+    <div className="w-[595px] h-[842px] bg-stone-200 flex flex-col items-center">
       {/* Header */}
-      <div className="self-stretch flex flex-col items-center mb-12">
-        <div className="ytf-title mb-4">QUOTATION</div>
-        <div className="ytf-label space-y-1">
-          <div>Quotation Number: {formData.quotationNumber}</div>
-          <div>Date: {formData.quotationDate}</div>
-        </div>
+      <div className="w-full p-2 flex justify-between items-center">
+        <div className="font-millie-mono text-[5px] uppercase">Yellow Type Foundry</div>
+        <div className="font-millie-mono text-[5px] uppercase">Quotation No. {formattedQuotationNumber}</div>
+        <div className="font-millie-mono text-[5px] uppercase">Issued on {formattedDate}</div>
       </div>
 
-      {/* Client Information */}
-      <div className="self-stretch mb-8">
-        <div className="ytf-label mb-2">Client Information:</div>
-        <div className="ytf-body">
-          <div>Name: {formData.clientName}</div>
-          <div>Email: {formData.clientEmail}</div>
-          {formData.clientAddress && <div>Address: {formData.clientAddress}</div>}
-        </div>
+      {/* Title */}
+      <div className="w-full font-oldman text-[62px] font-bold uppercase leading-[62px] text-center border-t border-b border-stone-300 py-2">
+        Typeface Licensing Quotation
       </div>
 
-      {/* Business Size Information */}
-      {selectedBusinessSize && (
-        <div className="self-stretch mb-8">
-          <div className="ytf-title text-2xl mb-2">{selectedBusinessSize.name} License</div>
-          <div className="ytf-body">{selectedBusinessSize.description}</div>
+      {/* Info Blocks */}
+      <div className="w-full p-2">
+        <div className="flex gap-4">
+          {/* Provider Info */}
+          <div className="flex-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50 leading-[5.05px] mb-1">License Provider</div>
+            <div className="font-grand text-[8px] leading-[9.60px] tracking-tight">Yellow Type Foundry</div>
+          </div>
+          {/* Licensee Info */}
+          <div className="flex-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50 leading-[5.05px] mb-1">Licensee</div>
+            <div className="font-grand text-[8px] leading-[9.60px] tracking-tight">
+              <div>{formData.clientName}</div>
+              <div>{formData.clientEmail}</div>
+              {formData.clientAddress && <div>{formData.clientAddress}</div>}
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Items Table */}
-      <div className="self-stretch mb-8">
-        <table className="w-full">
-          <thead className="ytf-bg">
-            <tr>
-              <th className="p-3 text-left ytf-label">NO</th>
-              <th className="p-3 text-left ytf-label">TYPEFACE</th>
-              <th className="p-3 text-left ytf-label">LICENSE TYPE</th>
-              <th className="p-3 text-left ytf-label">DURATION</th>
-              <th className="p-3 text-left ytf-label">LANGUAGES/CUTS</th>
-              <th className="p-3 text-left ytf-label">FILE FORMAT</th>
-              <th className="p-3 text-right ytf-label">AMOUNT (USD)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {formData.items.map((item: any, index: number) => (
-              <tr key={index} className="border-b border-gray-200">
-                <td className="p-3 ytf-body">{`0${index + 1}.`}</td>
-                <td className="p-3 ytf-body">{item.typeface}</td>
-                <td className="p-3 ytf-body">{item.licenseType}</td>
-                <td className="p-3 ytf-body">{formatDuration(item.durationType, item.durationYears)}</td>
-                <td className="p-3 ytf-body">{item.languageCut}</td>
-                <td className="p-3 ytf-body">{formatFileFormats(item.fileFormats)}</td>
-                <td className="p-3 ytf-body text-right">${Number.parseFloat(String(item.amount)).toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="w-full mt-2">
+        <div className="flex border-t border-b border-black border-opacity-30">
+          <div className="w-[5%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">No</div>
+          </div>
+          <div className="w-[20%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">Typeface</div>
+          </div>
+          <div className="w-[15%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">License Type</div>
+          </div>
+          <div className="w-[15%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">Duration</div>
+          </div>
+          <div className="w-[15%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">Languages/Cuts</div>
+          </div>
+          <div className="w-[15%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">File Format</div>
+          </div>
+          <div className="w-[15%] p-1">
+            <div className="font-millie-mono text-[5px] uppercase opacity-50">Amount</div>
+          </div>
+        </div>
+
+        {formData.items.map((item: any, index: number) => (
+          <div key={index} className="flex border-b border-black border-opacity-30">
+            <div className="w-[5%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px]">{`0${index + 1}.`}</div>
+            </div>
+            <div className="w-[20%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px]">{item.typeface}</div>
+            </div>
+            <div className="w-[15%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px]">{item.licenseType}</div>
+            </div>
+            <div className="w-[15%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px]">{item.duration}</div>
+            </div>
+            <div className="w-[15%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px]">{item.languageCut}</div>
+            </div>
+            <div className="w-[15%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px]">{item.fileFormats}</div>
+            </div>
+            <div className="w-[15%] p-1">
+              <div className="font-grand text-[8px] leading-[9.60px] text-right">${item.amount.toFixed(2)}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Totals */}
-      <div className="self-stretch mb-8">
-        <div className="flex justify-between mb-2">
-          <span className="ytf-label">SUBTOTAL</span>
-          <span className="ytf-subtotal">${formData.subtotal.toFixed(2)}</span>
+      <div className="w-full bg-lime-50 p-2 mt-2">
+        <div className="flex justify-between mb-1">
+          <div className="font-millie-mono text-[5px] uppercase">Subtotal</div>
+          <div className="font-grand text-[8px] text-right">${formData.subtotal.toFixed(2)}</div>
         </div>
-        <div className="flex justify-between mb-2">
-          <span className="ytf-label">VIETNAM VALUE ADDED TAX (DEDUCTED)</span>
-          <span className="ytf-subtotal">$0</span>
+        <div className="flex justify-between mb-1">
+          <div className="font-millie-mono text-[5px] uppercase">VAT</div>
+          <div className="font-grand text-[8px] text-right">$0.00</div>
         </div>
-        <div className="flex justify-between mt-4">
-          <span className="ytf-total">Total (USD):</span>
-          <span className="ytf-total">${formData.total.toFixed(2)}</span>
+        <div className="flex justify-between">
+          <div className="font-millie-mono text-[5px] uppercase">Total</div>
+          <div className="font-grand text-xl font-light text-right">${formData.total.toFixed(2)}</div>
         </div>
-        <div className="text-right mt-2">
-          <span className="ytf-body">≈ {vndAmount.toLocaleString()} VND</span>
+      </div>
+
+      {/* Notes */}
+      <div className="w-full p-2 mt-2">
+        <div className="font-millie-mono text-[5px] uppercase text-center mb-1">Notes</div>
+        <div className="font-grand text-[6px] leading-[9.60px] tracking-tight text-center">
+          This quotation is valid for 30 days from the date of issue. Payment terms are net 30 days.
+          All prices are in USD and exclude VAT. For any questions, please contact us at contact@yellowtypefoundry.com
         </div>
       </div>
 
       {/* Footer */}
-      <div className="self-stretch mt-auto">
-        <div className="flex justify-between ytf-footer">
-          <span>©2025 YELLOW TYPE FOUNDRY</span>
-          <span>YELLOWTYPE.COM</span>
-          <span>STRICTLY CONFIDENTIAL</span>
-        </div>
+      <div className="w-full p-2 mt-auto flex justify-between">
+        <div className="font-millie-mono text-[5px] uppercase">©2025 YELLOW TYPE FOUNDRY</div>
+        <div className="font-millie-mono text-[5px] uppercase">YELLOWTYPE.COM</div>
+        <div className="font-millie-mono text-[5px] uppercase">STRICTLY CONFIDENTIAL</div>
       </div>
     </div>
   )

@@ -24,6 +24,7 @@ import {
   getDurationPricingExplanation,
 } from "@/utils/typeface-data"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Worker } from "worker-loader!@/utils/pdf-worker"
 
 export default function QuotationPage() {
   const router = useRouter()
@@ -644,11 +645,29 @@ export default function QuotationPage() {
 
     try {
       console.log("Starting PDF generation...")
-      const blob = await generateQuotationPDF(formData)
-      console.log("PDF generated successfully")
+      
+      // Generate PDF blob with retry logic
+      let blob: Blob | null = null
+      let retryCount = 0
+      const maxRetries = 3
+
+      while (!blob && retryCount < maxRetries) {
+        try {
+          blob = await generateQuotationPDF(formData)
+          console.log("PDF generated successfully")
+        } catch (error) {
+          console.error(`PDF generation attempt ${retryCount + 1} failed:`, error)
+          retryCount++
+          if (retryCount === maxRetries) {
+            throw error
+          }
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+      }
 
       if (!blob) {
-        throw new Error("Failed to generate PDF blob")
+        throw new Error("Failed to generate PDF blob after multiple attempts")
       }
 
       // Create URL for blob
@@ -667,7 +686,7 @@ export default function QuotationPage() {
       console.log("Download triggered successfully")
     } catch (error) {
       console.error("Error generating PDF:", error)
-      alert("Failed to generate PDF. Please try again.")
+      alert(`Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setIsGenerating(false)
       // Clean up

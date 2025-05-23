@@ -32,256 +32,317 @@ interface QuotationData {
 Font.register({
   family: "YTF Oldman",
   src: "/fonts/YTFOldman-Bold.woff2",
-  fontWeight: "bold",
+  fontWeight: "bold"
 })
 
 Font.register({
-  family: "YTF Grand",
-  src: "/fonts/YTFGrand123-Regular.woff2",
-})
-
-Font.register({
-  family: "YTF VangMono",
+  family: "YTF Millie Mono",
   src: "/fonts/YTFVangMono-Regular.woff2",
+  fontWeight: "normal"
+})
+
+Font.register({
+  family: "YTF Grand 123",
+  src: "/fonts/YTFGrand123-Regular.woff2",
+  fontWeight: "normal"
 })
 
 // Create styles
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontFamily: "YTF Grand",
-    fontSize: 14,
-    lineHeight: 1.6,
-  },
-  header: {
-    marginBottom: 40,
+    padding: 0,
+    backgroundColor: "#e7e5e4", // bg-stone-200
+    width: 595,
+    height: 842,
+    display: "flex",
+    flexDirection: "column",
     alignItems: "center",
   },
-  title: {
-    fontFamily: "YTF Oldman",
-    fontSize: 32,
-    lineHeight: 1.1,
-    letterSpacing: -0.015,
-    marginBottom: 16,
+  header: {
+    width: "100%",
+    padding: 8, // p-2
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  headerLeft: {
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5,
     textTransform: "uppercase",
   },
-  subtitle: {
-    fontFamily: "YTF VangMono",
-    fontSize: 12,
-    lineHeight: 1.4,
-    letterSpacing: -0.01,
+  headerCenter: {
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5,
     textTransform: "uppercase",
+  },
+  headerRight: {
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5,
+    textTransform: "uppercase",
+  },
+  title: {
+    width: "100%",
+    fontFamily: "YTF Oldman",
+    fontSize: 62, // text-6xl
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    lineHeight: 62, // leading-[62px]
+    textAlign: "center",
+    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
+    borderColor: "#d6d3d1", // border-stone-300
+    padding: "8 0",
   },
   section: {
-    marginBottom: 32,
+    width: "100%",
+    padding: 8, // p-2
   },
-  sectionTitle: {
-    fontFamily: "YTF VangMono",
-    fontSize: 12,
-    lineHeight: 1.4,
-    letterSpacing: -0.01,
+  sectionLabel: {
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5, // text-[5px]
     textTransform: "uppercase",
-    marginBottom: 8,
+    lineHeight: 5.05, // leading-[5.05px]
+    opacity: 0.5,
+    marginBottom: 4,
   },
-  body: {
-    fontFamily: "YTF Grand",
-    fontSize: 14,
-    lineHeight: 1.6,
-    letterSpacing: 0.0025,
+  content: {
+    fontFamily: "YTF Grand 123",
+    fontSize: 8, // text-[8px]
+    lineHeight: 9.6, // leading-[9.60px]
+    letterSpacing: -0.01, // tracking-tight
   },
   table: {
     width: "100%",
-    marginBottom: 32,
+    marginTop: 8,
   },
   tableHeader: {
-    backgroundColor: "#e8eadd",
     flexDirection: "row",
+    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
+    borderColor: "#000000",
   },
   tableRow: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomWidth: 0.3,
+    borderColor: "#000000",
   },
   tableCell: {
-    padding: 12,
-    flex: 1,
+    padding: 4,
+    fontFamily: "YTF Grand 123",
+    fontSize: 8, // text-[8px]
+    lineHeight: 9.6, // leading-[9.60px]
   },
   tableCellHeader: {
-    fontFamily: "YTF VangMono",
-    fontSize: 12,
-    lineHeight: 1.4,
-    letterSpacing: -0.01,
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5, // text-[5px]
     textTransform: "uppercase",
-  },
-  tableCellBody: {
-    fontFamily: "YTF Grand",
-    fontSize: 14,
-    lineHeight: 1.6,
-    letterSpacing: 0.0025,
+    opacity: 0.5,
   },
   totals: {
-    marginBottom: 32,
+    width: "100%",
+    backgroundColor: "#f7fee7", // bg-lime-50
+    padding: 8,
+    marginTop: 8,
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   totalLabel: {
-    fontFamily: "YTF VangMono",
-    fontSize: 12,
-    lineHeight: 1.4,
-    letterSpacing: -0.01,
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5, // text-[5px]
     textTransform: "uppercase",
   },
   totalValue: {
-    fontFamily: "YTF Grand",
-    fontSize: 14,
-    lineHeight: 1.6,
-    letterSpacing: 0.0025,
+    fontFamily: "YTF Grand 123",
+    fontSize: 8, // text-[8px]
+    textAlign: "right",
   },
   grandTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
+    fontFamily: "YTF Grand 123",
+    fontSize: 20, // text-xl
+    fontWeight: "light",
+    textAlign: "right",
   },
-  grandTotalLabel: {
-    fontFamily: "YTF Grand",
-    fontSize: 18,
-    lineHeight: 1.2,
-    fontWeight: "bold",
+  notes: {
+    width: "100%",
+    padding: 8,
+    marginTop: 8,
   },
-  grandTotalValue: {
-    fontFamily: "YTF Grand",
-    fontSize: 18,
-    lineHeight: 1.2,
-    fontWeight: "bold",
+  notesTitle: {
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5, // text-[5px]
+    textTransform: "uppercase",
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  notesContent: {
+    fontFamily: "YTF Grand 123",
+    fontSize: 6, // text-[6px]
+    lineHeight: 9.6, // leading-[9.60px]
+    letterSpacing: -0.01, // tracking-tight
+    textAlign: "center",
   },
   footer: {
-    position: "absolute",
-    bottom: 40,
-    left: 40,
-    right: 40,
+    width: "100%",
+    padding: 8,
+    marginTop: "auto",
     flexDirection: "row",
     justifyContent: "space-between",
   },
   footerText: {
-    fontFamily: "YTF VangMono",
-    fontSize: 10,
-    lineHeight: 1.4,
-    letterSpacing: -0.01,
+    fontFamily: "YTF Millie Mono",
+    fontSize: 5, // text-[5px]
+    textTransform: "uppercase",
   },
 })
 
 // Create Document Component
-export const QuotationDocument = ({ data }: { data: QuotationData }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>QUOTATION</Text>
-        <View style={styles.subtitle}>
-          <Text>Quotation Number: {data.quotationNumber}</Text>
-          <Text>Date: {data.quotationDate}</Text>
-        </View>
-      </View>
+export const QuotationDocument = ({ data }: { data: QuotationData }) => {
+  // Ensure data is valid
+  const safeData = {
+    ...data,
+    items: Array.isArray(data.items) ? data.items : [],
+    quotationNumber: data.quotationNumber || "",
+    quotationDate: data.quotationDate || "",
+    clientName: data.clientName || "",
+    clientEmail: data.clientEmail || "",
+    clientAddress: data.clientAddress || "",
+    subtotal: Number(data.subtotal) || 0,
+    total: Number(data.total) || 0
+  }
 
-      {/* Client Information */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Client Information:</Text>
-        <View style={styles.body}>
-          <Text>Name: {data.clientName}</Text>
-          <Text>Email: {data.clientEmail}</Text>
-          {data.clientAddress && <Text>Address: {data.clientAddress}</Text>}
-        </View>
-      </View>
+  // Format date
+  const formattedDate = safeData.quotationDate ? new Date(safeData.quotationDate).toLocaleDateString() : ""
 
-      {/* Business Size Information */}
-      {data.businessSize && (
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerLeft}>Yellow Type Foundry</Text>
+          <Text style={styles.headerCenter}>Quotation No. {safeData.quotationNumber}</Text>
+          <Text style={styles.headerRight}>Issued on {formattedDate}</Text>
+        </View>
+
+        {/* Title */}
+        <Text style={styles.title}>Typeface Licensing Quotation</Text>
+
+        {/* Info Blocks */}
         <View style={styles.section}>
-          <Text style={styles.title}>{data.businessSize.name} License</Text>
-          <Text style={styles.body}>{data.businessSize.description}</Text>
-        </View>
-      )}
-
-      {/* Items Table */}
-      <View style={styles.table}>
-        <View style={styles.tableHeader}>
-          <View style={[styles.tableCell, { flex: 0.5 }]}>
-            <Text style={styles.tableCellHeader}>NO</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text style={styles.tableCellHeader}>TYPEFACE</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text style={styles.tableCellHeader}>LICENSE TYPE</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text style={styles.tableCellHeader}>DURATION</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text style={styles.tableCellHeader}>LANGUAGES/CUTS</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text style={styles.tableCellHeader}>FILE FORMAT</Text>
-          </View>
-          <View style={[styles.tableCell, { flex: 0.8 }]}>
-            <Text style={styles.tableCellHeader}>AMOUNT (USD)</Text>
+          <View style={{ flexDirection: "row", gap: 16 }}>
+            {/* Provider Info */}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sectionLabel}>License Provider</Text>
+              <Text style={styles.content}>Yellow Type Foundry</Text>
+            </View>
+            {/* Licensee Info */}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sectionLabel}>Licensee</Text>
+              <Text style={styles.content}>{safeData.clientName}</Text>
+              <Text style={styles.content}>{safeData.clientEmail}</Text>
+              {safeData.clientAddress && <Text style={styles.content}>{safeData.clientAddress}</Text>}
+            </View>
           </View>
         </View>
 
-        {data.items.map((item: QuotationItem, index: number) => (
-          <View key={index} style={styles.tableRow}>
-            <View style={[styles.tableCell, { flex: 0.5 }]}>
-              <Text style={styles.tableCellBody}>{`0${index + 1}.`}</Text>
+        {/* Items Table */}
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <View style={[styles.tableCell, { width: "5%" }]}>
+              <Text style={styles.tableCellHeader}>No</Text>
             </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.tableCellBody}>{item.typeface}</Text>
+            <View style={[styles.tableCell, { width: "20%" }]}>
+              <Text style={styles.tableCellHeader}>Typeface</Text>
             </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.tableCellBody}>{item.licenseType}</Text>
+            <View style={[styles.tableCell, { width: "15%" }]}>
+              <Text style={styles.tableCellHeader}>License Type</Text>
             </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.tableCellBody}>{item.duration}</Text>
+            <View style={[styles.tableCell, { width: "15%" }]}>
+              <Text style={styles.tableCellHeader}>Duration</Text>
             </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.tableCellBody}>{item.languageCut}</Text>
+            <View style={[styles.tableCell, { width: "15%" }]}>
+              <Text style={styles.tableCellHeader}>Languages/Cuts</Text>
             </View>
-            <View style={styles.tableCell}>
-              <Text style={styles.tableCellBody}>{item.fileFormats}</Text>
+            <View style={[styles.tableCell, { width: "15%" }]}>
+              <Text style={styles.tableCellHeader}>File Format</Text>
             </View>
-            <View style={[styles.tableCell, { flex: 0.8 }]}>
-              <Text style={styles.tableCellBody}>${Number.parseFloat(String(item.amount)).toFixed(2)}</Text>
+            <View style={[styles.tableCell, { width: "15%" }]}>
+              <Text style={styles.tableCellHeader}>Amount</Text>
             </View>
           </View>
-        ))}
-      </View>
 
-      {/* Totals */}
-      <View style={styles.totals}>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>SUBTOTAL</Text>
-          <Text style={styles.totalValue}>${data.subtotal.toFixed(2)}</Text>
-        </View>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>VIETNAM VALUE ADDED TAX (DEDUCTED)</Text>
-          <Text style={styles.totalValue}>$0</Text>
-        </View>
-        <View style={styles.grandTotal}>
-          <Text style={styles.grandTotalLabel}>Total (USD):</Text>
-          <Text style={styles.grandTotalValue}>${data.total.toFixed(2)}</Text>
-        </View>
-        <Text style={[styles.totalValue, { textAlign: "right", marginTop: 8 }]}>
-          ≈ {(data.total * 24500).toLocaleString()} VND
-        </Text>
-      </View>
+          {safeData.items.map((item, index) => {
+            const safeItem = {
+              typeface: String(item.typeface || ""),
+              licenseType: String(item.licenseType || ""),
+              duration: String(item.duration || ""),
+              languageCut: String(item.languageCut || ""),
+              fileFormats: String(item.fileFormats || ""),
+              amount: Number(item.amount) || 0
+            }
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>©2025 YELLOW TYPE FOUNDRY</Text>
-        <Text style={styles.footerText}>YELLOWTYPE.COM</Text>
-        <Text style={styles.footerText}>STRICTLY CONFIDENTIAL</Text>
-      </View>
-    </Page>
-  </Document>
-)
+            return (
+              <View key={index} style={styles.tableRow}>
+                <View style={[styles.tableCell, { width: "5%" }]}>
+                  <Text style={styles.tableCell}>{`0${index + 1}.`}</Text>
+                </View>
+                <View style={[styles.tableCell, { width: "20%" }]}>
+                  <Text style={styles.tableCell} wrap>{safeItem.typeface}</Text>
+                </View>
+                <View style={[styles.tableCell, { width: "15%" }]}>
+                  <Text style={styles.tableCell} wrap>{safeItem.licenseType}</Text>
+                </View>
+                <View style={[styles.tableCell, { width: "15%" }]}>
+                  <Text style={styles.tableCell}>{safeItem.duration}</Text>
+                </View>
+                <View style={[styles.tableCell, { width: "15%" }]}>
+                  <Text style={styles.tableCell}>{safeItem.languageCut}</Text>
+                </View>
+                <View style={[styles.tableCell, { width: "15%" }]}>
+                  <Text style={styles.tableCell}>{safeItem.fileFormats}</Text>
+                </View>
+                <View style={[styles.tableCell, { width: "15%" }]}>
+                  <Text style={styles.tableCell}>${safeItem.amount.toFixed(2)}</Text>
+                </View>
+              </View>
+            )
+          })}
+        </View>
+
+        {/* Totals */}
+        <View style={styles.totals}>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Subtotal</Text>
+            <Text style={styles.totalValue}>${safeData.subtotal.toFixed(2)}</Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>VAT</Text>
+            <Text style={styles.totalValue}>$0.00</Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.grandTotal}>${safeData.total.toFixed(2)}</Text>
+          </View>
+        </View>
+
+        {/* Notes */}
+        <View style={styles.notes}>
+          <Text style={styles.notesTitle}>Notes</Text>
+          <Text style={styles.notesContent}>
+            This quotation is valid for 30 days from the date of issue. Payment terms are net 30 days.
+            All prices are in USD and exclude VAT. For any questions, please contact us at contact@yellowtypefoundry.com
+          </Text>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>©2025 YELLOW TYPE FOUNDRY</Text>
+          <Text style={styles.footerText}>YELLOWTYPE.COM</Text>
+          <Text style={styles.footerText}>STRICTLY CONFIDENTIAL</Text>
+        </View>
+      </Page>
+    </Document>
+  )
+}

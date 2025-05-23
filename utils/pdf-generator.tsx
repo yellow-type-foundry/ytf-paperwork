@@ -34,41 +34,70 @@ interface FormItem {
   amount: number
 }
 
+// Cache for PDF blobs
+const pdfCache = new Map<string, Blob>()
+
 export async function generateQuotationPDF(formData: any): Promise<Blob> {
   try {
     console.log("Starting PDF generation...")
     
-    // Transform form data to match QuotationDocument interface
-    const transformedData: QuotationData = {
+    // Create a cache key from the form data
+    const cacheKey = JSON.stringify({
       quotationNumber: formData.quotationNumber,
-      quotationDate: formData.quotationDate,
-      clientName: formData.clientName,
-      clientEmail: formData.clientEmail,
-      clientAddress: formData.clientAddress,
-      businessSize: businessSizes.find(size => size.id === formData.businessSize),
-      items: formData.items.map((item: FormItem) => ({
+      items: formData.items.map((item: any) => ({
         typeface: item.typeface,
         licenseType: item.licenseType,
-        duration: item.durationType === "perpetual" ? "Perpetual" : `${item.durationYears} Years`,
-        languageCut: item.languageCut,
-        fileFormats: item.fileFormats.join(", "),
+        duration: item.durationType,
         amount: item.amount
-      })),
-      subtotal: formData.subtotal,
-      total: formData.total
+      }))
+    })
+
+    // Check if we have a cached version
+    const cachedBlob = pdfCache.get(cacheKey)
+    if (cachedBlob) {
+      console.log("Using cached PDF")
+      return cachedBlob
     }
     
-    // Generate PDF blob
-    const blob = await pdf(<QuotationDocument data={transformedData} />).toBlob()
+    // Transform form data to match QuotationDocument interface
+    const transformedData: QuotationData = {
+      quotationNumber: formData.quotationNumber || "",
+      quotationDate: formData.quotationDate || "",
+      clientName: formData.clientName || "",
+      clientEmail: formData.clientEmail || "",
+      clientAddress: formData.clientAddress || "",
+      businessSize: businessSizes.find(size => size.id === formData.businessSize),
+      items: (formData.items || []).map((item: any) => ({
+        typeface: item.typeface || "",
+        licenseType: item.licenseType || "",
+        duration: item.durationType === "perpetual" ? "Perpetual" : `${item.durationYears || 1} Years`,
+        languageCut: item.languageCut || "",
+        fileFormats: Array.isArray(item.fileFormats) ? item.fileFormats.join(", ") : (item.fileFormats || ""),
+        amount: Number(item.amount) || 0
+      })),
+      subtotal: Number(formData.subtotal) || 0,
+      total: Number(formData.total) || 0
+    }
+    
+    // Generate PDF blob with timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error("PDF generation timed out")), 30000) // 30 second timeout
+    })
+    
+    const pdfPromise = pdf(<QuotationDocument data={transformedData} />).toBlob()
+    const blob = await Promise.race([pdfPromise, timeoutPromise]) as Blob
     
     if (!blob) {
       throw new Error("Failed to generate PDF blob")
     }
     
+    // Cache the generated blob
+    pdfCache.set(cacheKey, blob)
+    
     console.log("PDF generated successfully")
     return blob
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error in generateQuotationPDF:", error)
-    throw error
+    throw new Error(`Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`)
   }
 }

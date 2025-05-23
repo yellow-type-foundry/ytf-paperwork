@@ -6,23 +6,20 @@
   src: url("/fonts/YTFOldman-Bold.woff2") format("woff2");
   font-weight: bold;
   font-style: normal;
-  font-display: swap;
 }
 
 @font-face {
-  font-family: "YTF Grand";
-  src: url("/fonts/YTFGrand123-Regular.woff2") format("woff2");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "YTF VangMono";
+  font-family: "YTF Millie Mono";
   src: url("/fonts/YTFVangMono-Regular.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+}
+
+@font-face {
+  font-family: "YTF Grand 123";
+  src: url("/fonts/YTFGrand123-Regular.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* Exact typography classes from Figma */
@@ -98,4 +95,16 @@
 /* Background color from Figma */
 .ytf-bg {
   background-color: #e8eadd;
+}
+
+.font-oldman {
+  font-family: "YTF Oldman", sans-serif;
+}
+
+.font-millie-mono {
+  font-family: "YTF Millie Mono", monospace;
+}
+
+.font-grand {
+  font-family: "YTF Grand 123", serif;
 }
