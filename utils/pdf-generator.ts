@@ -44,13 +44,28 @@ export async function generateQuotationPDF(formData: any) {
     doc.setFont("helvetica", "bold")
     doc.setFontSize(16)
     doc.setTextColor(0, 0, 0)
-    doc.text("YTF", 297.5, 50, { align: "center" })
+    
+    // Add logo container with exact 32px height
+    const logoContainerHeight = 32
+    const logoY = 50
+    doc.rect(0, logoY, 595, logoContainerHeight, "F") // Fill with background color
+    
+    // Add logo image (if available)
+    try {
+      const logoImg = await fetch("/YTF-LOGO.svg")
+        .then(res => res.arrayBuffer())
+        .then(buffer => new Uint8Array(buffer))
+      doc.addImage(logoImg, "SVG", 297.5 - 40, logoY + 4, 80, 24, undefined, "FAST")
+    } catch (error) {
+      // Fallback to text if image fails to load
+      doc.text("YTF", 297.5, logoY + 20, { align: "center" })
+    }
 
     // Header information - Mono font text style: 5px size, 100% leading, -1% tracking
     doc.setFont("courier", "normal") // Use courier for mono font (fallback for YTF VangMono)
     doc.setFontSize(5) // 5px size as specified
     doc.setTextColor(0, 0, 0)
-    doc.text("YELLOW TYPE FOUNDRY", 50, 100)
+    doc.text("YELLOW TYPE FOUNDRY", 50, logoY + logoContainerHeight + 20)
 
     // Format quotation number as DDMMYYYxxx
     const today = new Date(formData.quotationDate)
@@ -68,7 +83,7 @@ export async function generateQuotationPDF(formData: any) {
     }
 
     const formattedQuotationNumber = `${day}${month}${year}${sequentialNumber}`
-    doc.text(`QUOTATION NO. ${formattedQuotationNumber}`, 297.5, 100, { align: "center" })
+    doc.text(`QUOTATION NO. ${formattedQuotationNumber}`, 297.5, logoY + logoContainerHeight + 20, { align: "center" })
 
     // Current date formatted
     const formattedDate = today
@@ -78,7 +93,7 @@ export async function generateQuotationPDF(formData: any) {
         year: "numeric",
       })
       .toUpperCase()
-    doc.text(`ISSUED ON ${formattedDate}`, 545, 100, { align: "right" })
+    doc.text(`ISSUED ON ${formattedDate}`, 545, logoY + logoContainerHeight + 20, { align: "right" })
 
     // Main title - Large title: 58px, 90% leading, -1.5% tracking
     // Try to use YTF Oldman if available, otherwise fallback to helvetica bold
@@ -88,12 +103,12 @@ export async function generateQuotationPDF(formData: any) {
       doc.setFont("helvetica", "bold")
     }
     doc.setFontSize(58) // 58px size as specified
-    doc.text("TYPEFACE LICENSING QUOTATION", 50, 180)
+    doc.text("TYPEFACE LICENSING QUOTATION", 50, logoY + logoContainerHeight + 100)
 
     // License provider section
     doc.setFont("courier", "normal") // Use courier for mono font (fallback for YTF VangMono)
     doc.setFontSize(5) // 5px for labels
-    doc.text("LICENSE PROVIDER", 50, 220)
+    doc.text("LICENSE PROVIDER", 50, logoY + logoContainerHeight + 140)
 
     // Try to use YTF Grand if available, otherwise fallback to helvetica
     try {
@@ -102,15 +117,15 @@ export async function generateQuotationPDF(formData: any) {
       doc.setFont("helvetica", "normal")
     }
     doc.setFontSize(6) // 6px size as specified
-    doc.text("Yellow Type Foundry Company Ltd.", 50, 230)
-    doc.text("No.6, Lane 36, Nguyen Hong Street", 50, 240)
-    doc.text("Lang Ha Ward, Dong Da District, Hanoi, Vietnam", 50, 250)
-    doc.text("Tax ID: 0109884491", 50, 260)
+    doc.text("Yellow Type Foundry Company Ltd.", 50, logoY + logoContainerHeight + 150)
+    doc.text("No.6, Lane 36, Nguyen Hong Street", 50, logoY + logoContainerHeight + 160)
+    doc.text("Lang Ha Ward, Dong Da District, Hanoi, Vietnam", 50, logoY + logoContainerHeight + 170)
+    doc.text("Tax ID: 0109884491", 50, logoY + logoContainerHeight + 180)
 
     // Licensee section
     doc.setFont("courier", "normal") // Use courier for mono font (fallback for YTF VangMono)
     doc.setFontSize(5) // 5px for labels
-    doc.text("LICENSEE / END USER", 545, 220, { align: "right" })
+    doc.text("LICENSEE / END USER", 545, logoY + logoContainerHeight + 140, { align: "right" })
 
     // Try to use YTF Grand if available, otherwise fallback to helvetica
     try {
@@ -119,13 +134,13 @@ export async function generateQuotationPDF(formData: any) {
       doc.setFont("helvetica", "normal")
     }
     doc.setFontSize(6) // 6px size as specified
-    doc.text(formData.clientName, 545, 230, { align: "right" })
-    doc.text(formData.clientEmail, 545, 240, { align: "right" })
+    doc.text(formData.clientName, 545, logoY + logoContainerHeight + 150, { align: "right" })
+    doc.text(formData.clientEmail, 545, logoY + logoContainerHeight + 160, { align: "right" })
 
     // Billing address
     doc.setFont("courier", "normal") // Use courier for mono font (fallback for YTF VangMono)
     doc.setFontSize(5) // 5px for labels
-    doc.text("BILLING ADDRESS", 545, 260, { align: "right" })
+    doc.text("BILLING ADDRESS", 545, logoY + logoContainerHeight + 180, { align: "right" })
 
     // Try to use YTF Grand if available, otherwise fallback to helvetica
     try {
@@ -134,12 +149,12 @@ export async function generateQuotationPDF(formData: any) {
       doc.setFont("helvetica", "normal")
     }
     doc.setFontSize(6) // 6px size as specified
-    doc.text(formData.clientAddress || "N/A", 545, 270, { align: "right" })
+    doc.text(formData.clientAddress || "N/A", 545, logoY + logoContainerHeight + 190, { align: "right" })
 
     // Quotation date section
     doc.setFont("courier", "normal") // Use courier for mono font (fallback for YTF VangMono)
     doc.setFontSize(5) // 5px for labels
-    doc.text("QUOTATION DATE", 50, 290)
+    doc.text("QUOTATION DATE", 50, logoY + logoContainerHeight + 210)
 
     // Try to use YTF Grand if available, otherwise fallback to helvetica
     try {
@@ -148,22 +163,22 @@ export async function generateQuotationPDF(formData: any) {
       doc.setFont("helvetica", "normal")
     }
     doc.setFontSize(6) // 6px size as specified
-    doc.text(formattedDate, 50, 300)
-    doc.text(`(Valid for 30 days from the issue day)`, 50, 310)
+    doc.text(formattedDate, 50, logoY + logoContainerHeight + 220)
+    doc.text(`(Valid for 30 days from the issue day)`, 50, logoY + logoContainerHeight + 230)
 
     // Add business size information
     if (selectedBusinessSize) {
       doc.setFont("helvetica", "bold")
       doc.setFontSize(14)
-      doc.text(`${selectedBusinessSize.name} License`, 50, 340)
+      doc.text(`${selectedBusinessSize.name} License`, 50, logoY + logoContainerHeight + 260)
 
       doc.setFont("helvetica", "normal")
       doc.setFontSize(10)
-      doc.text(selectedBusinessSize.description, 50, 360)
+      doc.text(selectedBusinessSize.description, 50, logoY + logoContainerHeight + 280)
     }
 
     // Add discount information if applicable
-    let discountY = 380
+    let discountY = logoY + logoContainerHeight + 300
     if (formData.nonProfitDiscount || formData.customDiscountPercent > 0) {
       doc.setFont("helvetica", "bold")
       doc.setFontSize(10)
@@ -191,8 +206,8 @@ export async function generateQuotationPDF(formData: any) {
 
     // Transform the items to match the template format
     const tableRows = formData.items
-      .filter((item) => item.typefaceFamily && item.typefaceVariant) // Only include items with typeface family and variant
-      .map((item, index) => [
+      .filter((item: any) => item.typefaceFamily && item.typefaceVariant) // Only include items with typeface family and variant
+      .map((item: any, index: number) => [
         `0${index + 1}.`, // Format as 01., 02., etc.
         item.typeface || `${item.typefaceFamily} ${item.typefaceVariant}`, // Use combined name or construct it
         item.licenseType,
@@ -212,7 +227,6 @@ export async function generateQuotationPDF(formData: any) {
         fontSize: 6, // 6px size as specified
         cellPadding: 5,
         font: "helvetica", // Fallback for YTF Grand
-        lineHeight: 1.6,
       },
       headStyles: {
         fillColor: [232, 234, 221], // Same as background
@@ -221,7 +235,6 @@ export async function generateQuotationPDF(formData: any) {
         font: "courier", // Fallback for YTF VangMono
         fontSize: 5, // 5px for headers
         lineWidth: 0.1,
-        textTransform: "uppercase",
       },
       columnStyles: {
         0: { cellWidth: 30 }, // NO
