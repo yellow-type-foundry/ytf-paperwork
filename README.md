@@ -1,30 +1,51 @@
-# YTF paperwork
+# YTF Paperwork
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A Next.js application for managing Yellow Type Foundry's paperwork, including EULA generation, invoices, and quotations.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/bao-lams-projects-69977547/v0-ytf-paperwork)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/1n9JkIerYxe)
+## Features
 
-## Overview
+- EULA Editor with real-time preview
+- PDF generation
+- Form validation
+- Responsive design
+- Dark/Light mode support
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## Tech Stack
+
+- Next.js 14
+- React
+- TypeScript
+- Tailwind CSS
+- Shadcn UI
+- React Hook Form
+- Zod
+- Vercel (Deployment)
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Deployment
 
-Your project is live at:
+This project is automatically deployed to Vercel. Any changes pushed to the main branch will trigger a new deployment.
 
-**[https://vercel.com/bao-lams-projects-69977547/v0-ytf-paperwork](https://vercel.com/bao-lams-projects-69977547/v0-ytf-paperwork)**
+## License
 
-## Build your app
-
-Continue building your app on:
-
-**[https://v0.dev/chat/projects/1n9JkIerYxe](https://v0.dev/chat/projects/1n9JkIerYxe)**
-
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+© 2024 Yellow Type Foundry. All rights reserved.
