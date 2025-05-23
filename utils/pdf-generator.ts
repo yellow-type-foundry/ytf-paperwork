@@ -14,35 +14,61 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 async function loadCustomFonts() {
   try {
+    console.log("Starting to load custom fonts...")
+    
     // Load TTF fonts directly
+    console.log("Fetching YTFGrand123-Regular.ttf...")
     const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.ttf")
+    if (!grandFontResponse.ok) {
+      throw new Error(`Failed to load YTFGrand123 font: ${grandFontResponse.statusText}`)
+    }
     const grandFontBuffer = await grandFontResponse.arrayBuffer()
+    console.log("YTFGrand123 font loaded successfully")
     
+    console.log("Fetching YTFVangMono-Regular.ttf...")
     const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.ttf")
+    if (!vangMonoResponse.ok) {
+      throw new Error(`Failed to load YTFVangMono font: ${vangMonoResponse.statusText}`)
+    }
     const vangMonoBuffer = await vangMonoResponse.arrayBuffer()
+    console.log("YTFVangMono font loaded successfully")
     
+    console.log("Fetching YTFOldman-Bold.ttf...")
     const oldmanResponse = await fetch("/fonts/YTFOldman-Bold.ttf")
+    if (!oldmanResponse.ok) {
+      throw new Error(`Failed to load YTFOldman font: ${oldmanResponse.statusText}`)
+    }
     const oldmanBuffer = await oldmanResponse.arrayBuffer()
+    console.log("YTFOldman font loaded successfully")
 
     // Add fonts to jsPDF
+    console.log("Creating new jsPDF instance...")
     const pdf = new jsPDF()
     
     // Convert ArrayBuffer to base64 and add to virtual file system
+    console.log("Adding fonts to virtual file system...")
     pdf.addFileToVFS("YTFGrand123-Regular.ttf", arrayBufferToBase64(grandFontBuffer))
     pdf.addFileToVFS("YTFVangMono-Regular.ttf", arrayBufferToBase64(vangMonoBuffer))
     pdf.addFileToVFS("YTFOldman-Bold.ttf", arrayBufferToBase64(oldmanBuffer))
     
     // Register fonts
+    console.log("Registering fonts...")
     pdf.addFont("YTFGrand123-Regular.ttf", "YTFGrand123", "normal")
     pdf.addFont("YTFVangMono-Regular.ttf", "YTFVangMono", "normal")
     pdf.addFont("YTFOldman-Bold.ttf", "YTFOldman", "bold")
+    
+    // Set default font
+    pdf.setFont("YTFGrand123", "normal")
     
     console.log("Custom fonts loaded successfully")
     return pdf
   } catch (error) {
     console.error("Error loading custom fonts:", error)
     // Fallback to system fonts
-    return new jsPDF()
+    console.log("Falling back to system fonts...")
+    const pdf = new jsPDF()
+    pdf.setFont("helvetica", "normal")
+    return pdf
   }
 }
 
@@ -59,6 +85,10 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
     // Load custom fonts
     console.log("Loading custom fonts...")
     const pdf = await loadCustomFonts()
+    
+    // Copy font settings from loaded PDF
+    doc.setFont(pdf.getFont().fontName, pdf.getFont().fontStyle)
+    console.log("Font settings copied:", pdf.getFont())
 
     // Get the selected business size
     const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize)
@@ -88,7 +118,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
 
       // Add client information
       doc.text("Client Information:", 20, 100)
-      doc.setFont("YTF Grand 123", "normal")
+      doc.setFont("YTFGrand123", "normal")
       doc.text(`Name: ${formData.clientName}`, 20, 105)
       doc.text(`Email: ${formData.clientEmail}`, 20, 110)
       if (formData.clientAddress) {
@@ -101,7 +131,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
         doc.setFontSize(14)
         doc.text(`${selectedBusinessSize.name} License`, 20, 140)
 
-        doc.setFont("YTF Grand 123", "normal")
+        doc.setFont("YTFGrand123", "normal")
         doc.setFontSize(10)
         doc.text(selectedBusinessSize.description, 20, 160)
       }
@@ -114,7 +144,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
         doc.text("Applied Discounts:", 20, yPos)
         yPos += 20
 
-        doc.setFont("YTF Grand 123", "normal")
+        doc.setFont("YTFGrand123", "normal")
         doc.setFontSize(8)
 
         if (formData.nonProfitDiscount) {
@@ -155,7 +185,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
         styles: {
           fontSize: 8,
           cellPadding: 5,
-          font: "YTF Grand 123",
+          font: "YTFGrand123",
           lineColor: [0, 0, 0],
           lineWidth: 0.1,
         },
@@ -194,7 +224,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.setFontSize(8)
       doc.text("SUBTOTAL", 50, finalY)
 
-      doc.setFont("YTF Grand 123", "normal")
+      doc.setFont("YTFGrand123", "normal")
       doc.setFontSize(8)
       doc.text(`$${formData.subtotal.toFixed(2)}`, 545, finalY, { align: "right" })
 
@@ -203,7 +233,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.setFontSize(8)
       doc.text("VIETNAM VALUE ADDED TAX (DEDUCTED)", 50, finalY + 15)
 
-      doc.setFont("YTF Grand 123", "normal")
+      doc.setFont("YTFGrand123", "normal")
       doc.setFontSize(8)
       doc.text("$0", 545, finalY + 15, { align: "right" })
 
@@ -214,7 +244,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.text(`$${formData.total.toFixed(2)}`, 545, finalY + 40, { align: "right" })
 
       // Add VND conversion
-      doc.setFont("YTF Grand 123", "normal")
+      doc.setFont("YTFGrand123", "normal")
       doc.setFontSize(10)
       const vndAmount = formData.total * 24500 // Fixed exchange rate for PDF
       doc.text(`≈ ${vndAmount.toLocaleString()} VND`, 545, finalY + 60, { align: "right" })
@@ -231,13 +261,14 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.text("NOTES:", 297.5, finalY + 110, { align: "center" })
 
       // Add standard terms text
-      doc.setFont("YTF Grand 123", "normal")
+      doc.setFont("YTFGrand123", "normal")
       doc.setFontSize(8)
       const termsText =
         "All offers and license agreements from Yellow Type Foundry are governed exclusively by Yellow Type Foundry's General Terms\nand Conditions (EULA), with any conflicting terms from the licensees' general conditions expressly excluded."
       const termsLines = doc.splitTextToSize(termsText, 400)
       doc.text(termsLines, 297.5, finalY + 120, { align: "center" })
 
+      console.log("PDF generation completed successfully")
       return doc
     } catch (error) {
       console.error("Error adding content to PDF:", error)
