@@ -639,36 +639,44 @@ export default function QuotationPage() {
     }
 
     setIsGenerating(true)
+    let blobUrl: string | null = null
 
     try {
-      // Use our PDF generator utility
-      const doc = await generateQuotationPDF(formData)
+      console.log("Starting PDF generation...")
+      const pdf = await generateQuotationPDF(formData)
+      console.log("PDF generated successfully")
 
-      // Create a blob from the PDF
-      const pdfBlob = doc.output('blob')
-      
-      // Create a URL for the blob
-      const pdfUrl = URL.createObjectURL(pdfBlob)
-      
-      // Create a temporary link element
-      const link = document.createElement('a')
-      link.href = pdfUrl
+      // Create blob from PDF
+      const blob = pdf.output("blob")
+      console.log("Blob created successfully")
+
+      // Create URL for blob
+      blobUrl = URL.createObjectURL(blob)
+      console.log("Blob URL created successfully")
+
+      // Create temporary link element
+      const link = document.createElement("a")
+      link.href = blobUrl
       link.download = `YTF-Quotation-${formData.quotationNumber}.pdf`
-      
-      // Append the link to the document
+      console.log("Download link created successfully")
+
+      // Append link to document and trigger download
       document.body.appendChild(link)
-      
-      // Trigger the download
       link.click()
-      
+      console.log("Download triggered successfully")
+
       // Clean up
       document.body.removeChild(link)
-      URL.revokeObjectURL(pdfUrl)
+      URL.revokeObjectURL(blobUrl)
+      console.log("Cleanup completed successfully")
     } catch (error) {
       console.error("Error generating PDF:", error)
-      alert("There was an error generating the PDF. Please try again.")
+      alert("Failed to generate PDF. Please try again.")
     } finally {
       setIsGenerating(false)
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl)
+      }
     }
   }
 
