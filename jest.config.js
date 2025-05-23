@@ -4,7 +4,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/$1'
   },
   transform: {
-    '^.+\\.[tj]sx?$': 'babel-jest'
+    '^.+\\.[tj]sx?$': ['@swc/jest']
   },
   transformIgnorePatterns: [
     '/node_modules/(?!(react-pdf|@react-pdf|pdf-lib)/)'

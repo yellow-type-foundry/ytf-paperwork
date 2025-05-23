@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Plus, Trash2, Loader2, AlertCircle, Download, Info } from "lucide-react"
 import { generateQuotationPDF } from "@/utils/pdf-generator"
-import { PDFPreview } from "@/components/pdf-preview"
+import dynamic from "next/dynamic"
 import { CurrencyConverter } from "@/components/currency-converter"
 import {
   ytfTypefaces,
@@ -25,6 +25,8 @@ import {
 } from "@/utils/typeface-data"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Worker } from "worker-loader!@/utils/pdf-worker"
+
+const PDFPreview = dynamic(() => import("@/components/pdf-preview"), { ssr: false })
 
 export default function QuotationPage() {
   const router = useRouter()
