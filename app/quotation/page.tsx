@@ -640,18 +640,23 @@ export default function QuotationPage() {
 
     setIsGenerating(true)
     let blobUrl: string | null = null
+    let link: HTMLAnchorElement | null = null
 
     try {
       console.log("Starting PDF generation...")
       const blob = await generateQuotationPDF(formData)
       console.log("PDF generated successfully")
 
+      if (!blob) {
+        throw new Error("Failed to generate PDF blob")
+      }
+
       // Create URL for blob
       blobUrl = URL.createObjectURL(blob)
       console.log("Blob URL created successfully")
 
       // Create temporary link element
-      const link = document.createElement("a")
+      link = document.createElement("a")
       link.href = blobUrl
       link.download = `YTF-Quotation-${formData.quotationNumber}.pdf`
       console.log("Download link created successfully")
@@ -660,19 +665,19 @@ export default function QuotationPage() {
       document.body.appendChild(link)
       link.click()
       console.log("Download triggered successfully")
-
-      // Clean up
-      document.body.removeChild(link)
-      URL.revokeObjectURL(blobUrl)
-      console.log("Cleanup completed successfully")
     } catch (error) {
       console.error("Error generating PDF:", error)
       alert("Failed to generate PDF. Please try again.")
     } finally {
       setIsGenerating(false)
+      // Clean up
+      if (link && link.parentNode) {
+        link.parentNode.removeChild(link)
+      }
       if (blobUrl) {
         URL.revokeObjectURL(blobUrl)
       }
+      console.log("Cleanup completed successfully")
     }
   }
 

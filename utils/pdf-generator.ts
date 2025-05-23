@@ -59,12 +59,17 @@ export async function generateQuotationPDF(formData: any): Promise<Blob> {
       total: formData.total
     }
     
-    // Create the PDF document
-    const blob = await pdf(
-      React.createElement(Document, null,
-        React.createElement(QuotationDocument, { data: transformedData })
-      )
-    ).toBlob()
+    // Create the PDF document with proper error handling
+    const pdfDoc = React.createElement(Document, null,
+      React.createElement(QuotationDocument, { data: transformedData })
+    )
+    
+    // Generate PDF blob
+    const blob = await pdf(pdfDoc).toBlob()
+    
+    if (!blob) {
+      throw new Error("Failed to generate PDF blob")
+    }
     
     console.log("PDF generated successfully")
     return blob
