@@ -646,7 +646,27 @@ export default function QuotationPage() {
 
       // Save the PDF
       const fileName = `YTF-Quotation-${formData.quotationNumber}.pdf`
-      doc.save(fileName)
+      
+      // Create a blob from the PDF
+      const pdfBlob = doc.output('blob')
+      
+      // Create a URL for the blob
+      const pdfUrl = URL.createObjectURL(pdfBlob)
+      
+      // Create a temporary link element
+      const link = document.createElement('a')
+      link.href = pdfUrl
+      link.download = fileName
+      
+      // Append the link to the document
+      document.body.appendChild(link)
+      
+      // Trigger the download
+      link.click()
+      
+      // Clean up
+      document.body.removeChild(link)
+      URL.revokeObjectURL(pdfUrl)
     } catch (error) {
       console.error("Error generating PDF:", error)
       alert("There was an error generating the PDF. Please try again.")
