@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import Link from "next/link"
-import { FileIcon as FileInvoice, Calculator, FileText } from "lucide-react"
+import { FileText } from "lucide-react"
 
 export default function PaperworkDashboard() {
   return (
@@ -46,21 +46,6 @@ export default function PaperworkDashboard() {
             </Button>
           </CardFooter>
         </Card>
-
-        <Link href="/invoice" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-2xl font-bold">Invoice</CardTitle>
-              <FileInvoice className="h-8 w-8 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base min-h-[60px]">
-                Generate professional invoices for clients.
-              </CardDescription>
-              <Button className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600">Create Invoice</Button>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
     </div>
   )
