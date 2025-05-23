@@ -127,4 +127,11 @@ describe('PDF Generator', () => {
       src: expect.stringContaining('YTFGrand123-Regular.woff2')
     }))
   })
+
+  it('should generate a valid PDF blob for download', async () => {
+    const blob = await generateQuotationPDF(mockFormData);
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+    expect(blob.type).toBe('application/pdf');
+  });
 }) 
