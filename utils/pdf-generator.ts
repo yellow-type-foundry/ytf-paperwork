@@ -32,8 +32,8 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       }
       const grandFontBuffer = await grandFontResponse.arrayBuffer()
       const grandFontBase64 = arrayBufferToBase64(grandFontBuffer)
-      doc.addFileToVFS("YTFGrand123-Regular.ttf", grandFontBase64)
-      doc.addFont("YTFGrand123-Regular.ttf", "YTF Grand 123", "normal")
+      doc.addFileToVFS("YTFGrand123-Regular.woff2", grandFontBase64)
+      doc.addFont("YTFGrand123-Regular.woff2", "YTF Grand 123", "normal")
       console.log("YTF Grand 123 font loaded successfully")
 
       // Load YTF VangMono
@@ -43,8 +43,8 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       }
       const vangMonoFontBuffer = await vangMonoFontResponse.arrayBuffer()
       const vangMonoFontBase64 = arrayBufferToBase64(vangMonoFontBuffer)
-      doc.addFileToVFS("YTFVangMono-Regular.ttf", vangMonoFontBase64)
-      doc.addFont("YTFVangMono-Regular.ttf", "YTFVangMono", "normal")
+      doc.addFileToVFS("YTFVangMono-Regular.woff2", vangMonoFontBase64)
+      doc.addFont("YTFVangMono-Regular.woff2", "YTFVangMono", "normal")
       console.log("YTF VangMono font loaded successfully")
 
       // Load YTF Oldman
@@ -54,8 +54,8 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       }
       const oldmanFontBuffer = await oldmanFontResponse.arrayBuffer()
       const oldmanFontBase64 = arrayBufferToBase64(oldmanFontBuffer)
-      doc.addFileToVFS("YTFOldman-Bold.ttf", oldmanFontBase64)
-      doc.addFont("YTFOldman-Bold.ttf", "YTFOldman", "bold")
+      doc.addFileToVFS("YTFOldman-Bold.woff2", oldmanFontBase64)
+      doc.addFont("YTFOldman-Bold.woff2", "YTFOldman", "bold")
       console.log("YTF Oldman font loaded successfully")
 
       // Set default font
