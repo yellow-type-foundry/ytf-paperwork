@@ -29,9 +29,9 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.woff2")
       const grandFontBuffer = await grandFontResponse.arrayBuffer()
       const grandFontBase64 = arrayBufferToBase64(grandFontBuffer)
-      doc.addFileToVFS("YTFGrand-Regular.ttf", grandFontBase64)
-      doc.addFont("YTFGrand-Regular.ttf", "YTFGrand", "normal")
-      console.log("YTF Grand font loaded successfully")
+      doc.addFileToVFS("YTFGrand123-Regular.ttf", grandFontBase64)
+      doc.addFont("YTFGrand123-Regular.ttf", "YTF Grand 123", "normal")
+      console.log("YTF Grand 123 font loaded successfully")
 
       // Load YTF VangMono
       const vangMonoFontResponse = await fetch("/fonts/YTFVangMono-Regular.woff2")
@@ -81,7 +81,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
 
       // Add client information
       doc.text("Client Information:", 20, 100)
-      doc.setFont("YTFGrand", "normal")
+      doc.setFont("YTF Grand 123", "normal")
       doc.text(`Name: ${formData.clientName}`, 20, 105)
       doc.text(`Email: ${formData.clientEmail}`, 20, 110)
       if (formData.clientAddress) {
@@ -94,7 +94,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
         doc.setFontSize(14)
         doc.text(`${selectedBusinessSize.name} License`, 20, 140)
 
-        doc.setFont("YTFGrand", "normal")
+        doc.setFont("YTF Grand 123", "normal")
         doc.setFontSize(10)
         doc.text(selectedBusinessSize.description, 20, 160)
       }
@@ -107,7 +107,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
         doc.text("Applied Discounts:", 20, yPos)
         yPos += 20
 
-        doc.setFont("YTFGrand", "normal")
+        doc.setFont("YTF Grand 123", "normal")
         doc.setFontSize(8)
 
         if (formData.nonProfitDiscount) {
@@ -148,7 +148,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
         styles: {
           fontSize: 8,
           cellPadding: 5,
-          font: "YTFGrand",
+          font: "YTF Grand 123",
           lineColor: [0, 0, 0],
           lineWidth: 0.1,
         },
@@ -187,7 +187,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.setFontSize(8)
       doc.text("SUBTOTAL", 50, finalY)
 
-      doc.setFont("YTFGrand", "normal")
+      doc.setFont("YTF Grand 123", "normal")
       doc.setFontSize(8)
       doc.text(`$${formData.subtotal.toFixed(2)}`, 545, finalY, { align: "right" })
 
@@ -196,7 +196,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.setFontSize(8)
       doc.text("VIETNAM VALUE ADDED TAX (DEDUCTED)", 50, finalY + 15)
 
-      doc.setFont("YTFGrand", "normal")
+      doc.setFont("YTF Grand 123", "normal")
       doc.setFontSize(8)
       doc.text("$0", 545, finalY + 15, { align: "right" })
 
@@ -207,7 +207,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.text(`$${formData.total.toFixed(2)}`, 545, finalY + 40, { align: "right" })
 
       // Add VND conversion
-      doc.setFont("YTFGrand", "normal")
+      doc.setFont("YTF Grand 123", "normal")
       doc.setFontSize(10)
       const vndAmount = formData.total * 24500 // Fixed exchange rate for PDF
       doc.text(`≈ ${vndAmount.toLocaleString()} VND`, 545, finalY + 60, { align: "right" })
@@ -224,7 +224,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
       doc.text("NOTES:", 297.5, finalY + 110, { align: "center" })
 
       // Add standard terms text
-      doc.setFont("YTFGrand", "normal")
+      doc.setFont("YTF Grand 123", "normal")
       doc.setFontSize(8)
       const termsText =
         "All offers and license agreements from Yellow Type Foundry are governed exclusively by Yellow Type Foundry's General Terms\nand Conditions (EULA), with any conflicting terms from the licensees' general conditions expressly excluded."
