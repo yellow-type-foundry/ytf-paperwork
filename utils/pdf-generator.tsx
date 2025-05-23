@@ -44,11 +44,11 @@ export async function generateQuotationPDF(formData: any): Promise<Blob> {
     // Create a cache key from the form data
     const cacheKey = JSON.stringify({
       quotationNumber: formData.quotationNumber,
-      items: formData.items.map((item: any) => ({
-        typeface: item.typeface,
-        licenseType: item.licenseType,
-        duration: item.durationType,
-        amount: item.amount
+      items: (formData.items || []).map((item: any) => ({
+        typeface: item.typeface || "",
+        licenseType: item.licenseType || "",
+        duration: item.durationType || "",
+        amount: Number(item.amount) || 0
       }))
     })
 
@@ -67,14 +67,14 @@ export async function generateQuotationPDF(formData: any): Promise<Blob> {
       clientEmail: formData.clientEmail || "",
       clientAddress: formData.clientAddress || "",
       businessSize: businessSizes.find(size => size.id === formData.businessSize),
-      items: (formData.items || []).map((item: any) => ({
-        typeface: item.typeface || "",
-        licenseType: item.licenseType || "",
+      items: Array.isArray(formData.items) ? formData.items.map((item: any) => ({
+        typeface: String(item.typeface || ""),
+        licenseType: String(item.licenseType || ""),
         duration: item.durationType === "perpetual" ? "Perpetual" : `${item.durationYears || 1} Years`,
-        languageCut: item.languageCut || "",
-        fileFormats: Array.isArray(item.fileFormats) ? item.fileFormats.join(", ") : (item.fileFormats || ""),
+        languageCut: String(item.languageCut || ""),
+        fileFormats: Array.isArray(item.fileFormats) ? item.fileFormats.join(", ") : String(item.fileFormats || ""),
         amount: Number(item.amount) || 0
-      })),
+      })) : [],
       subtotal: Number(formData.subtotal) || 0,
       total: Number(formData.total) || 0
     }
