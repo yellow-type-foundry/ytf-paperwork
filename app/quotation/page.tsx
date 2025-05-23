@@ -55,21 +55,21 @@ export default function QuotationPage() {
     customDiscountPercent: 0, // Custom discount percentage
     items: [
       {
-        typefaceFamily: "",
-        typefaceVariant: "",
-        typeface: "", // This will be constructed from family and variant
+        typefaceFamily: "YTF Gióng", // Set default typeface family
+        typefaceVariant: "Roman", // Set default variant
+        typeface: "YTF Gióng Roman", // Set default full typeface name
         licenseType: "Individual License (No commercial use)",
         durationType: "perpetual", // "perpetual" or "custom"
         durationYears: 1, // Number of years for custom duration
         languageCut: "Latin, Medium",
         fileFormats: ["otf_ttf"], // Set default to OTF, TTF
-        basePrice: 0,
-        amount: 0, // This will be calculated based on basePrice, businessSize, and fileFormats
+        basePrice: 100.0, // Set base price for YTF Gióng
+        amount: 100.0, // Set initial amount
       },
     ],
-    subtotal: 0,
+    subtotal: 100.0, // Set initial subtotal
     tax: 0, // Vietnam value added tax (deducted)
-    total: 0,
+    total: 100.0, // Set initial total
   })
 
   // Track touched fields for validation
@@ -89,7 +89,7 @@ export default function QuotationPage() {
   })
 
   // Track available variants for each item
-  const [availableVariants, setAvailableVariants] = useState([[]])
+  const [availableVariants, setAvailableVariants] = useState([["Roman", "Italic"]]) // Set default variants for YTF Gióng
 
   // Enable client-side rendering detection
   useEffect(() => {
