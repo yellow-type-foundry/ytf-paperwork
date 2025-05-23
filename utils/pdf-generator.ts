@@ -66,19 +66,23 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
     // Load logo
     console.log("Loading logo...")
     try {
-      const logoResponse = await fetch("/YTF-LOGO.svg", { cache: "no-store" })
+      const logoResponse = await fetch("/placeholder-logo.png", { cache: "no-store" })
       if (!logoResponse.ok) {
         throw new Error(`Failed to load logo: ${logoResponse.status} ${logoResponse.statusText}`)
       }
-      const logoSvg = await logoResponse.text()
+      const logoBlob = await logoResponse.blob()
       console.log("Logo loaded successfully")
 
-      // Convert SVG to base64
-      const svgBase64 = window.btoa(logoSvg)
-      const svgDataUrl = `data:image/svg+xml;base64,${svgBase64}`
+      // Convert blob to base64
+      const reader = new FileReader()
+      const logoBase64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(logoBlob)
+      })
 
       // Add logo to PDF
-      doc.addImage(svgDataUrl, "PNG", 20, 20, 40, 40)
+      doc.addImage(logoBase64, "PNG", 20, 20, 40, 40)
       console.log("Logo added to PDF successfully")
     } catch (logoError) {
       console.error("Error loading logo:", logoError)
