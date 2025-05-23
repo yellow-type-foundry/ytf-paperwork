@@ -26,9 +26,10 @@ export async function generateQuotationPDF(formData: any) {
     // Add custom fonts
     try {
       // Load and register custom fonts
-      const vangMonoFont = await fetch("/fonts/YTFVangMono-Regular.woff2").then(res => res.arrayBuffer())
-      const grandFont = await fetch("/fonts/YTFGrand123-Regular.woff2").then(res => res.arrayBuffer())
-      const grandBoldFont = await fetch("/fonts/YTFGrand123-Bold.woff2").then(res => res.arrayBuffer())
+      const [vangMonoFont, grandFont] = await Promise.all([
+        fetch("/fonts/YTFVangMono-Regular.woff2").then(res => res.arrayBuffer()),
+        fetch("/fonts/YTFGrand123-Regular.woff2").then(res => res.arrayBuffer())
+      ])
       
       // Convert ArrayBuffer to base64 string
       const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
@@ -40,15 +41,22 @@ export async function generateQuotationPDF(formData: any) {
         return btoa(binary)
       }
       
+      // Add fonts to virtual file system
       doc.addFileToVFS("YTFVangMono-Regular.woff2", arrayBufferToBase64(vangMonoFont))
       doc.addFileToVFS("YTFGrand123-Regular.woff2", arrayBufferToBase64(grandFont))
-      doc.addFileToVFS("YTFGrand123-Bold.woff2", arrayBufferToBase64(grandBoldFont))
       
+      // Register fonts
       doc.addFont("YTFVangMono-Regular.woff2", "YTF Vang Mono", "normal")
       doc.addFont("YTFGrand123-Regular.woff2", "YTF Grand 123", "normal")
-      doc.addFont("YTFGrand123-Bold.woff2", "YTF Grand 123", "bold")
+      // Use regular weight for bold text since we don't have the bold font
+      doc.addFont("YTFGrand123-Regular.woff2", "YTF Grand 123", "bold")
+
+      // Set default font
+      doc.setFont("YTF Grand 123", "normal")
     } catch (error) {
-      console.warn("Could not load custom fonts, using fallbacks:", error)
+      console.error("Error loading custom fonts:", error)
+      // Fallback to system fonts
+      doc.setFont("helvetica", "normal")
     }
 
     // Background color - light cream/off-white
@@ -62,11 +70,14 @@ export async function generateQuotationPDF(formData: any) {
     
     // Add logo image (if available)
     try {
-      const logoImg = await fetch("/YTF-LOGO.svg")
-        .then(res => res.arrayBuffer())
-        .then(buffer => new Uint8Array(buffer))
+      const logoResponse = await fetch("/YTF-LOGO.svg")
+      if (!logoResponse.ok) throw new Error("Failed to load logo")
+      
+      const logoBuffer = await logoResponse.arrayBuffer()
+      const logoImg = new Uint8Array(logoBuffer)
       doc.addImage(logoImg, "SVG", 297.5 - 40, logoY + 4, 80, 24, undefined, "FAST")
     } catch (error) {
+      console.error("Error loading logo:", error)
       // Fallback to text if image fails to load
       doc.setFont("YTF Grand 123", "bold")
       doc.setFontSize(16)
