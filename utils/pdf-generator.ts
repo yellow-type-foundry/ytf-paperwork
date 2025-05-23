@@ -12,44 +12,53 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return window.btoa(binary)
 }
 
+// Pre-load fonts as base64 strings
+let fontCache: { [key: string]: string } = {}
+
+async function preloadFonts() {
+  try {
+    console.log("Preloading fonts...")
+    
+    // Load and cache fonts
+    const fonts = [
+      { name: "YTFGrand123", path: "/fonts/YTFGrand123-Regular.ttf" },
+      { name: "YTFVangMono", path: "/fonts/YTFVangMono-Regular.ttf" },
+      { name: "YTFOldman", path: "/fonts/YTFOldman-Bold.ttf" }
+    ]
+    
+    for (const font of fonts) {
+      console.log(`Loading ${font.name}...`)
+      const response = await fetch(font.path)
+      if (!response.ok) {
+        throw new Error(`Failed to load ${font.name} font: ${response.statusText}`)
+      }
+      const buffer = await response.arrayBuffer()
+      fontCache[font.name] = arrayBufferToBase64(buffer)
+      console.log(`${font.name} loaded successfully`)
+    }
+    
+    console.log("All fonts preloaded successfully")
+  } catch (error) {
+    console.error("Error preloading fonts:", error)
+    throw error
+  }
+}
+
+// Initialize font loading
+preloadFonts().catch(console.error)
+
 async function loadCustomFonts() {
   try {
     console.log("Starting to load custom fonts...")
     
-    // Load TTF fonts directly
-    console.log("Fetching YTFGrand123-Regular.ttf...")
-    const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.ttf")
-    if (!grandFontResponse.ok) {
-      throw new Error(`Failed to load YTFGrand123 font: ${grandFontResponse.statusText}`)
-    }
-    const grandFontBuffer = await grandFontResponse.arrayBuffer()
-    console.log("YTFGrand123 font loaded successfully")
-    
-    console.log("Fetching YTFVangMono-Regular.ttf...")
-    const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.ttf")
-    if (!vangMonoResponse.ok) {
-      throw new Error(`Failed to load YTFVangMono font: ${vangMonoResponse.statusText}`)
-    }
-    const vangMonoBuffer = await vangMonoResponse.arrayBuffer()
-    console.log("YTFVangMono font loaded successfully")
-    
-    console.log("Fetching YTFOldman-Bold.ttf...")
-    const oldmanResponse = await fetch("/fonts/YTFOldman-Bold.ttf")
-    if (!oldmanResponse.ok) {
-      throw new Error(`Failed to load YTFOldman font: ${oldmanResponse.statusText}`)
-    }
-    const oldmanBuffer = await oldmanResponse.arrayBuffer()
-    console.log("YTFOldman font loaded successfully")
-
-    // Add fonts to jsPDF
-    console.log("Creating new jsPDF instance...")
+    // Create new jsPDF instance
     const pdf = new jsPDF()
     
-    // Convert ArrayBuffer to base64 and add to virtual file system
+    // Add fonts to virtual file system
     console.log("Adding fonts to virtual file system...")
-    pdf.addFileToVFS("YTFGrand123-Regular.ttf", arrayBufferToBase64(grandFontBuffer))
-    pdf.addFileToVFS("YTFVangMono-Regular.ttf", arrayBufferToBase64(vangMonoBuffer))
-    pdf.addFileToVFS("YTFOldman-Bold.ttf", arrayBufferToBase64(oldmanBuffer))
+    pdf.addFileToVFS("YTFGrand123-Regular.ttf", fontCache["YTFGrand123"])
+    pdf.addFileToVFS("YTFVangMono-Regular.ttf", fontCache["YTFVangMono"])
+    pdf.addFileToVFS("YTFOldman-Bold.ttf", fontCache["YTFOldman"])
     
     // Register fonts
     console.log("Registering fonts...")
@@ -76,6 +85,13 @@ async function loadCustomFonts() {
 export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
   try {
     console.log("Starting PDF generation...")
+    
+    // Wait for fonts to be preloaded
+    if (Object.keys(fontCache).length === 0) {
+      console.log("Waiting for fonts to be preloaded...")
+      await preloadFonts()
+    }
+    
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "pt", // Use points for exact sizing
