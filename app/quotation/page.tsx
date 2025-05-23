@@ -916,11 +916,17 @@ export default function QuotationPage() {
                           <SelectValue placeholder="Select duration" />
                         </SelectTrigger>
                         <SelectContent>
-                          {durationOptions.map((option) => (
-                            <SelectItem key={option.id} value={option.id}>
-                              {option.name}
-                            </SelectItem>
-                          ))}
+                          {durationOptions.map((option) => {
+                            // Only show custom duration for XL businesses and above
+                            if (option.id === "custom" && !["xl", "custom"].includes(formData.businessSize)) {
+                              return null;
+                            }
+                            return (
+                              <SelectItem key={option.id} value={option.id}>
+                                {option.name}
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                     </div>

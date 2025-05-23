@@ -63,7 +63,7 @@ export function PDFPreview({ formData }: { formData: any }) {
         }}
       >
         {/* YTF Logo */}
-        <div className="flex justify-between items-center mb-12 pt-6">
+        <div className="flex justify-between items-center mb-12 pt-6" style={{ height: '32px' }}>
           <div className="w-1/3"></div>
           <div className="text-center w-1/3">
             <img src="/YTF-LOGO.svg" alt="YTF Logo" style={{ display: 'inline-block', height: 32, width: 'auto', margin: '0 auto' }} />
