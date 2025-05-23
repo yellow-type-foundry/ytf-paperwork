@@ -4,33 +4,41 @@ import { businessSizes, formatFileFormats, formatDuration } from "./typeface-dat
 
 // Define the PDF layout based on the provided template and design notes
 export async function generateQuotationPDF(formData: any) {
-  // Create a new jsPDF instance with A4 size (595x842 points)
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "pt", // Use points for exact sizing
-    format: "a4", // A4 size: 595x842 points
-  })
-
-  // Get the selected business size
-  const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize)
-
-  // Set document properties
-  doc.setProperties({
-    title: `Typeface Licensing Quotation for ${formData.clientName}`,
-    subject: `Quotation No. ${formData.quotationNumber}`,
-    author: "Yellow Type Foundry",
-    creator: "Yellow Type Foundry Document Generator",
-  })
-
   try {
+    // Create a new jsPDF instance with A4 size (595x842 points)
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "pt", // Use points for exact sizing
+      format: "a4", // A4 size: 595x842 points
+    })
+
+    // Get the selected business size
+    const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize)
+
+    // Set document properties
+    doc.setProperties({
+      title: `Typeface Licensing Quotation for ${formData.clientName}`,
+      subject: `Quotation No. ${formData.quotationNumber}`,
+      author: "Yellow Type Foundry",
+      creator: "Yellow Type Foundry Document Generator",
+    })
+
     // Add custom fonts
     try {
+      console.log("Loading custom fonts...")
       // Load and register custom fonts
       const [vangMonoFont, grandFont] = await Promise.all([
-        fetch("/fonts/YTFVangMono-Regular.woff2").then(res => res.arrayBuffer()),
-        fetch("/fonts/YTFGrand123-Regular.woff2").then(res => res.arrayBuffer())
+        fetch("/fonts/YTFVangMono-Regular.woff2").then(res => {
+          if (!res.ok) throw new Error(`Failed to load YTFVangMono-Regular.woff2: ${res.status} ${res.statusText}`)
+          return res.arrayBuffer()
+        }),
+        fetch("/fonts/YTFGrand123-Regular.woff2").then(res => {
+          if (!res.ok) throw new Error(`Failed to load YTFGrand123-Regular.woff2: ${res.status} ${res.statusText}`)
+          return res.arrayBuffer()
+        })
       ])
       
+      console.log("Converting fonts to base64...")
       // Convert ArrayBuffer to base64 string
       const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
         const bytes = new Uint8Array(buffer)
@@ -41,10 +49,12 @@ export async function generateQuotationPDF(formData: any) {
         return btoa(binary)
       }
       
+      console.log("Adding fonts to VFS...")
       // Add fonts to virtual file system
       doc.addFileToVFS("YTFVangMono-Regular.woff2", arrayBufferToBase64(vangMonoFont))
       doc.addFileToVFS("YTFGrand123-Regular.woff2", arrayBufferToBase64(grandFont))
       
+      console.log("Registering fonts...")
       // Register fonts
       doc.addFont("YTFVangMono-Regular.woff2", "YTF Vang Mono", "normal")
       doc.addFont("YTFGrand123-Regular.woff2", "YTF Grand 123", "normal")
@@ -53,6 +63,7 @@ export async function generateQuotationPDF(formData: any) {
 
       // Set default font
       doc.setFont("YTF Grand 123", "normal")
+      console.log("Fonts loaded successfully")
     } catch (error) {
       console.error("Error loading custom fonts:", error)
       // Fallback to system fonts
@@ -70,12 +81,14 @@ export async function generateQuotationPDF(formData: any) {
     
     // Add logo image (if available)
     try {
+      console.log("Loading logo...")
       const logoResponse = await fetch("/YTF-LOGO.svg")
-      if (!logoResponse.ok) throw new Error("Failed to load logo")
+      if (!logoResponse.ok) throw new Error(`Failed to load logo: ${logoResponse.status} ${logoResponse.statusText}`)
       
       const logoBuffer = await logoResponse.arrayBuffer()
       const logoImg = new Uint8Array(logoBuffer)
       doc.addImage(logoImg, "SVG", 297.5 - 40, logoY + 4, 80, 24, undefined, "FAST")
+      console.log("Logo loaded successfully")
     } catch (error) {
       console.error("Error loading logo:", error)
       // Fallback to text if image fails to load
@@ -307,7 +320,7 @@ export async function generateQuotationPDF(formData: any) {
 
     return doc
   } catch (error) {
-    console.error("Error generating PDF:", error)
+    console.error("Error in generateQuotationPDF:", error)
     throw error
   }
 }
