@@ -41,11 +41,6 @@ export async function generateQuotationPDF(formData: any) {
     doc.rect(0, 0, 595, 842, "F") // A4 size in points
 
     // Add YTF logo at the top centered
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(16)
-    doc.setTextColor(0, 0, 0)
-    
-    // Add logo container with exact 32px height
     const logoContainerHeight = 32
     const logoY = 50
     doc.rect(0, logoY, 595, logoContainerHeight, "F") // Fill with background color
@@ -58,6 +53,8 @@ export async function generateQuotationPDF(formData: any) {
       doc.addImage(logoImg, "SVG", 297.5 - 40, logoY + 4, 80, 24, undefined, "FAST")
     } catch (error) {
       // Fallback to text if image fails to load
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(16)
       doc.text("YTF", 297.5, logoY + 20, { align: "center" })
     }
 
