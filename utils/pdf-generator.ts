@@ -4,29 +4,112 @@ import { businessSizes, formatFileFormats, formatDuration } from "./typeface-dat
 import fs from "fs"
 import path from "path"
 
+// Helper function to convert ArrayBuffer to base64
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer)
+  let binary = ""
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return window.btoa(binary)
+}
+
 // Define the PDF layout based on the provided template and design notes
-export async function generateQuotationPDF(formData: any) {
+export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
   try {
-    // Create a new jsPDF instance with A4 size (595x842 points)
+    console.log("Starting PDF generation...")
     const doc = new jsPDF({
       orientation: "portrait",
-      unit: "pt", // Use points for exact sizing
-      format: "a4", // A4 size: 595x842 points
+      unit: "mm",
+      format: "a4",
     })
 
     // Get the selected business size
     const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize)
 
+    // Load custom fonts
+    console.log("Loading fonts...")
+    try {
+      // Load Vang Mono font
+      const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.woff2", { cache: "no-cache" })
+      if (!vangMonoResponse.ok) {
+        throw new Error(`Failed to load Vang Mono font: ${vangMonoResponse.status} ${vangMonoResponse.statusText}`)
+      }
+      const vangMonoFont = await vangMonoResponse.arrayBuffer()
+      console.log("Vang Mono font loaded successfully")
+
+      // Load Grand font
+      const grandResponse = await fetch("/fonts/YTFGrand123-Regular.woff2", { cache: "no-cache" })
+      if (!grandResponse.ok) {
+        throw new Error(`Failed to load Grand font: ${grandResponse.status} ${grandResponse.statusText}`)
+      }
+      const grandFont = await grandResponse.arrayBuffer()
+      console.log("Grand font loaded successfully")
+
+      // Convert fonts to base64
+      const vangMonoBase64 = arrayBufferToBase64(vangMonoFont)
+      const grandBase64 = arrayBufferToBase64(grandFont)
+
+      // Add fonts to virtual file system
+      doc.addFileToVFS("YTFVangMono-Regular.woff2", vangMonoBase64)
+      doc.addFileToVFS("YTFGrand123-Regular.woff2", grandBase64)
+
+      // Add fonts to document
+      doc.addFont("YTFVangMono-Regular.woff2", "YTFVangMono", "normal")
+      doc.addFont("YTFGrand123-Regular.woff2", "YTFGrand", "normal")
+      console.log("Fonts added to document successfully")
+    } catch (fontError) {
+      console.error("Error loading fonts:", fontError)
+      // Fallback to system fonts
+      doc.setFont("helvetica")
+      console.log("Using system fonts as fallback")
+    }
+
+    // Load logo
+    console.log("Loading logo...")
+    try {
+      const logoResponse = await fetch("/YTF-LOGO.svg", { cache: "no-cache" })
+      if (!logoResponse.ok) {
+        throw new Error(`Failed to load logo: ${logoResponse.status} ${logoResponse.statusText}`)
+      }
+      const logoSvg = await logoResponse.text()
+      console.log("Logo loaded successfully")
+
+      // Add logo to PDF
+      doc.addImage(logoSvg, "SVG", 20, 20, 40, 40)
+      console.log("Logo added to PDF successfully")
+    } catch (logoError) {
+      console.error("Error loading logo:", logoError)
+      // Continue without logo
+      console.log("Continuing without logo")
+    }
+
     // Set document properties
     doc.setProperties({
-      title: `Typeface Licensing Quotation for ${formData.clientName}`,
-      subject: `Quotation No. ${formData.quotationNumber}`,
+      title: `YTF Quotation ${formData.quotationNumber}`,
+      subject: "Typeface License Quotation",
       author: "Yellow Type Foundry",
-      creator: "Yellow Type Foundry Document Generator",
+      keywords: "typeface, font, license, quotation",
+      creator: "YTF Paperwork",
     })
 
-    // Add custom fonts
+    // Add content to PDF
+    console.log("Adding content to PDF...")
     try {
+      // Add header
+      doc.setFont("YTFGrand", "normal")
+      doc.setFontSize(24)
+      doc.text("QUOTATION", 105, 30, { align: "center" })
+
+      // Add quotation details
+      doc.setFont("YTFVangMono", "normal")
+      doc.setFontSize(10)
+      doc.text(`Quotation Number: ${formData.quotationNumber}`, 20, 80)
+      doc.text(`Date: ${formData.quotationDate}`, 20, 85)
+
+      // Add client information
+      doc.text("Client Information:", 20, 100)
+      doc.text(`Name: ${formData.clientName}`, 20, 105)
       console.log("Loading custom fonts...")
       
       // Load and register custom fonts
