@@ -1,6 +1,8 @@
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 import { businessSizes, formatFileFormats, formatDuration } from "./typeface-data"
+import fs from "fs"
+import path from "path"
 
 // Define the PDF layout based on the provided template and design notes
 export async function generateQuotationPDF(formData: any) {
@@ -26,6 +28,7 @@ export async function generateQuotationPDF(formData: any) {
     // Add custom fonts
     try {
       console.log("Loading custom fonts...")
+      
       // Load and register custom fonts
       const [vangMonoFont, grandFont] = await Promise.all([
         fetch("/fonts/YTFVangMono-Regular.woff2", { cache: "no-cache" }).then(res => {
