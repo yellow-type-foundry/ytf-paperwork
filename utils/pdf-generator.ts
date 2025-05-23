@@ -1,7 +1,6 @@
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 import { businessSizes, formatFileFormats, formatDuration } from "./typeface-data"
-import { convertWoff2ToTtf } from "./font-converter"
 
 // Helper function to convert ArrayBuffer to base64
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -15,26 +14,23 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 async function loadCustomFonts() {
   try {
-    // Load and convert fonts
-    const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.woff2")
+    // Load TTF fonts directly
+    const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.ttf")
     const grandFontBuffer = await grandFontResponse.arrayBuffer()
-    const grandFontTtf = await convertWoff2ToTtf(grandFontBuffer)
     
-    const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.woff2")
+    const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.ttf")
     const vangMonoBuffer = await vangMonoResponse.arrayBuffer()
-    const vangMonoTtf = await convertWoff2ToTtf(vangMonoBuffer)
     
-    const oldmanResponse = await fetch("/fonts/YTFOldman-Bold.woff2")
+    const oldmanResponse = await fetch("/fonts/YTFOldman-Bold.ttf")
     const oldmanBuffer = await oldmanResponse.arrayBuffer()
-    const oldmanTtf = await convertWoff2ToTtf(oldmanBuffer)
 
     // Add fonts to jsPDF
     const pdf = new jsPDF()
     
     // Convert ArrayBuffer to base64 and add to virtual file system
-    pdf.addFileToVFS("YTFGrand123-Regular.ttf", arrayBufferToBase64(grandFontTtf))
-    pdf.addFileToVFS("YTFVangMono-Regular.ttf", arrayBufferToBase64(vangMonoTtf))
-    pdf.addFileToVFS("YTFOldman-Bold.ttf", arrayBufferToBase64(oldmanTtf))
+    pdf.addFileToVFS("YTFGrand123-Regular.ttf", arrayBufferToBase64(grandFontBuffer))
+    pdf.addFileToVFS("YTFVangMono-Regular.ttf", arrayBufferToBase64(vangMonoBuffer))
+    pdf.addFileToVFS("YTFOldman-Bold.ttf", arrayBufferToBase64(oldmanBuffer))
     
     // Register fonts
     pdf.addFont("YTFGrand123-Regular.ttf", "YTFGrand123", "normal")
