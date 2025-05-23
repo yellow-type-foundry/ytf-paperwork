@@ -70,4 +70,26 @@ export interface PDFRendererProps {
 export interface FontSelectorProps {
   onSelectionChange: (fonts: Font[]) => void
   selectedFonts?: Font[]
+}
+
+export interface QuotationData {
+  quotationNumber: string
+  quotationDate: string
+  clientName: string
+  clientEmail: string
+  clientAddress?: string
+  businessSize?: {
+    name: string
+    description: string
+  }
+  items: Array<{
+    typeface: string
+    licenseType: string
+    duration: string
+    languageCut: string
+    fileFormats: string
+    amount: number
+  }>
+  subtotal: number
+  total: number
 } 
