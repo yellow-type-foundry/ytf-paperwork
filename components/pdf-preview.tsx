@@ -42,162 +42,187 @@ export function PDFPreview({ formData }: { formData: any }) {
   // Fixed exchange rate for preview
   const vndAmount = formData.total * 24500
 
-  // Helper function to determine typeface style class
-  const getTypefaceStyleClass = (typefaceFamily: any) => {
-    if (typefaceFamily.includes("Eon")) return "ytf-eon"
-    if (typefaceFamily.includes("Cafuné")) return "ytf-cafune"
-    if (typefaceFamily.includes("Gióng")) return "ytf-giong"
-    if (typefaceFamily.includes("Millie")) return "ytf-millie"
-    return ""
-  }
-
   return (
-    <div className="w-full aspect-[1/1.414] rounded-md shadow-sm overflow-hidden border">
-      <div
-        className="p-6 text-xs text-black relative ytf-bg"
-        style={{
-          transform: "scale(0.7)",
-          transformOrigin: "top left",
-          width: "143%",
-          height: "143%",
-        }}
-      >
-        {/* YTF Logo */}
-        <div className="flex justify-between items-center mb-12 pt-6" style={{ height: '32px' }}>
-          <div className="w-1/3"></div>
-          <div className="text-center w-1/3">
-            <img src="/YTF-LOGO.svg" alt="YTF Logo" style={{ display: 'inline-block', height: 32, width: 'auto', margin: '0 auto' }} />
-          </div>
-          <div className="w-1/3"></div>
+    <div className="w-[794px] h-[1123px] bg-white p-5">
+      {/* Header */}
+      <div className="grid grid-cols-2 gap-5 mb-8">
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Quotation Number</label>
+          <input
+            type="text"
+            value={formattedQuotationNumber}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
-
-        {/* Header information */}
-        <div className="flex justify-between mb-12">
-          <span className="ytf-label">YELLOW TYPE FOUNDRY</span>
-          <span className="ytf-label">QUOTATION NO. {formattedQuotationNumber}</span>
-          <span className="ytf-label">ISSUED ON {formattedDate}</span>
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Date</label>
+          <input
+            type="text"
+            value={formattedDate}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
+      </div>
 
-        {/* Main title */}
-        <h1 className="ytf-title mb-12 mt-8">TYPEFACE LICENSING QUOTATION</h1>
-
-        {/* Business Size Information */}
-        {selectedBusinessSize && (
-          <div className="mb-6">
-            <h2 className="text-lg font-bold">{selectedBusinessSize.name} License</h2>
-            <p className="text-xs">{selectedBusinessSize.description}</p>
-          </div>
-        )}
-
-        {/* Discount Information */}
-        {(formData.nonProfitDiscount || formData.customDiscountPercent > 0) && (
-          <div className="mb-6">
-            <h3 className="text-sm font-bold">Applied Discounts:</h3>
-            <ul className="text-[8px] mt-1 ml-2">
-              {formData.nonProfitDiscount && <li>• Non-profit / Charity Discount: 30%</li>}
-              {formData.customDiscountPercent > 0 && <li>• Custom Discount: {formData.customDiscountPercent}%</li>}
-            </ul>
-          </div>
-        )}
-
-        {/* Provider and client sections */}
-        <div className="flex justify-between mb-12">
-          <div>
-            <p className="ytf-label mb-2">LICENSE PROVIDER</p>
-            <p className="ytf-body">Yellow Type Foundry Company Ltd.</p>
-            <p className="ytf-body">No.6, Lane 36, Nguyen Hong Street</p>
-            <p className="ytf-body">Lang Ha Ward, Dong Da District, Hanoi, Vietnam</p>
-            <p className="ytf-body">Tax ID: 0109884491</p>
-          </div>
-
-          <div className="text-right">
-            <p className="ytf-label mb-2">LICENSEE / END USER</p>
-            <p className="ytf-body">{formData.clientName}</p>
-            <p className="ytf-body">{formData.clientEmail}</p>
-            <p className="ytf-label mt-4 mb-2">BILLING ADDRESS</p>
-            <p className="ytf-body">{formData.clientAddress || "N/A"}</p>
-          </div>
+      {/* Client Information */}
+      <div className="grid grid-cols-2 gap-5 mb-8">
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Client Name</label>
+          <input
+            type="text"
+            value={formData.clientName}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
-
-        {/* Quotation date */}
-        <div className="mb-12">
-          <p className="ytf-label mb-2">QUOTATION DATE</p>
-          <p className="ytf-body">{formattedDate}</p>
-          <p className="ytf-body">(Valid for 30 days from the issue day)</p>
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Email</label>
+          <input
+            type="text"
+            value={formData.clientEmail}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
+      </div>
 
-        {/* Items table */}
-        <div className="mb-8 overflow-hidden">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-1 ytf-label">NO</th>
-                <th className="text-left p-1 ytf-label">TYPEFACE</th>
-                <th className="text-left p-1 ytf-label">LICENSE TYPE</th>
-                <th className="text-left p-1 ytf-label">DURATION</th>
-                <th className="text-left p-1 ytf-label">LANGUAGES/CUTS</th>
-                <th className="text-left p-1 ytf-label">FILE FORMAT</th>
-                <th className="text-right p-1 ytf-label">AMOUNT (USD)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.items
-                .filter((item: any) => item.typefaceFamily && item.typefaceVariant)
-                .map((item: any, index: number) => (
-                  <tr key={index} className="border-t border-gray-300">
-                    <td className="p-1 ytf-body">{`0${index + 1}.`}</td>
-                    <td className={`p-1 ytf-body ${getTypefaceStyleClass(item.typefaceFamily)}`}>
-                      {item.typefaceFamily}
-                    </td>
-                    <td className="p-1 ytf-body">{item.licenseType}</td>
-                    <td className="p-1 ytf-body">{formatDuration(item.durationType, item.durationYears)}</td>
-                    <td className="p-1 ytf-body">{item.languageCut}</td>
-                    <td className="p-1 ytf-body">{formatFileFormats(item.fileFormats)}</td>
-                    <td className="p-1 ytf-body text-right">${Number.parseFloat(String(item.amount)).toFixed(2)}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+      {/* Business Size */}
+      <div className="grid grid-cols-2 gap-5 mb-8">
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Business Size</label>
+          <input
+            type="text"
+            value={selectedBusinessSize?.name || ""}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Description</label>
+          <input
+            type="text"
+            value={selectedBusinessSize?.description || ""}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
+        </div>
+      </div>
 
-        {/* Totals */}
-        <div className="mt-6 space-y-2">
-          <div className="flex justify-between">
-            <span className="ytf-label">SUBTOTAL</span>
-            <span className="ytf-subtotal">${formData.subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="ytf-label">VIETNAM VALUE ADDED TAX (DEDUCTED)</span>
-            <span className="ytf-subtotal">$0</span>
-          </div>
-          <div className="flex justify-between mt-8">
-            <span className="ytf-total">Total (USD):</span>
-            <span className="ytf-total">${formData.total.toFixed(2)}</span>
-          </div>
-        </div>
+      {/* Items Table */}
+      <div className="mb-8">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-[#e8eadd]">
+              <th className="text-left p-2 text-[9px] leading-[120%] font-ytf-vangmono">NO</th>
+              <th className="text-left p-2 text-[9px] leading-[120%] font-ytf-vangmono">TYPEFACE</th>
+              <th className="text-left p-2 text-[9px] leading-[120%] font-ytf-vangmono">LICENSE TYPE</th>
+              <th className="text-left p-2 text-[9px] leading-[120%] font-ytf-vangmono">DURATION</th>
+              <th className="text-left p-2 text-[9px] leading-[120%] font-ytf-vangmono">LANGUAGES/CUTS</th>
+              <th className="text-left p-2 text-[9px] leading-[120%] font-ytf-vangmono">FILE FORMAT</th>
+              <th className="text-right p-2 text-[9px] leading-[120%] font-ytf-vangmono">AMOUNT (USD)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formData.items
+              .filter((item: any) => item.typefaceFamily && item.typefaceVariant)
+              .map((item: any, index: number) => (
+                <tr key={index} className="border-t border-gray-200">
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand">{`0${index + 1}.`}</td>
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand">{item.typefaceFamily}</td>
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand">{item.licenseType}</td>
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand">{formatDuration(item.durationType, item.durationYears)}</td>
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand">{item.languageCut}</td>
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand">{formatFileFormats(item.fileFormats)}</td>
+                  <td className="p-2 text-[9px] leading-[120%] font-ytf-grand text-right">${Number.parseFloat(String(item.amount)).toFixed(2)}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
 
-        {/* Extensions */}
-        <div className="flex justify-between mt-12">
-          <span className="ytf-label">EXTENSIONS - INCLUDED</span>
-          <span className="ytf-label">EXTENSIONS - EXCLUDED</span>
+      {/* Totals */}
+      <div className="grid grid-cols-2 gap-5 mb-8">
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Subtotal</label>
+          <input
+            type="text"
+            value={`$${formData.subtotal.toFixed(2)}`}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Tax (Deducted)</label>
+          <input
+            type="text"
+            value="$0.00"
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
+        </div>
+      </div>
 
-        {/* Notes */}
-        <div className="mt-16 text-center">
-          <p className="ytf-label mb-2">NOTES:</p>
-          <p className="ytf-body max-w-md mx-auto">
-            All offers and license agreements from Yellow Type Foundry are governed exclusively by Yellow Type Foundry's
-            General Terms and Conditions (EULA), with any conflicting terms from the licensees' general conditions
-            expressly excluded.
-          </p>
+      {/* Total */}
+      <div className="grid grid-cols-2 gap-5 mb-8">
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Total (USD)</label>
+          <input
+            type="text"
+            value={`$${formData.total.toFixed(2)}`}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Total (VND)</label>
+          <input
+            type="text"
+            value={`${vndAmount.toLocaleString()} VND`}
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
+        </div>
+      </div>
 
-        {/* Footer */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-between px-6">
-          <span className="ytf-footer">©2025 YELLOW TYPE FOUNDRY</span>
-          <span className="ytf-footer">YELLOWTYPE.COM</span>
-          <span className="ytf-footer">STRICTLY CONFIDENTIAL</span>
+      {/* Extensions */}
+      <div className="grid grid-cols-2 gap-5 mb-8">
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Extensions - Included</label>
+          <input
+            type="text"
+            value="Standard license terms"
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
         </div>
+        <div className="space-y-1">
+          <label className="block text-[9px] leading-[120%] font-ytf-grand">Extensions - Excluded</label>
+          <input
+            type="text"
+            value="Custom modifications"
+            readOnly
+            className="w-full h-6 px-2 text-[9px] leading-[120%] font-ytf-grand bg-muted"
+          />
+        </div>
+      </div>
+
+      {/* Notes */}
+      <div className="space-y-1">
+        <label className="block text-[9px] leading-[120%] font-ytf-grand">Notes</label>
+        <textarea
+          value="All offers and license agreements from Yellow Type Foundry are governed exclusively by Yellow Type Foundry's General Terms and Conditions (EULA), with any conflicting terms from the licensees' general conditions expressly excluded."
+          readOnly
+          className="w-full h-24 px-2 py-1 text-[9px] leading-[120%] font-ytf-grand bg-muted resize-none"
+        />
+      </div>
+
+      {/* Footer */}
+      <div className="absolute bottom-5 left-5 right-5 flex justify-between text-[9px] leading-[120%] font-ytf-vangmono">
+        <span>©2025 YELLOW TYPE FOUNDRY</span>
+        <span>YELLOWTYPE.COM</span>
+        <span>STRICTLY CONFIDENTIAL</span>
       </div>
     </div>
   )
