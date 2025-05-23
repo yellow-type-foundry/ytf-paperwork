@@ -75,7 +75,7 @@ export async function generateQuotationPDF(formData: any) {
 
     // Header information - Mono font text style: 5px size, 100% leading, -1% tracking
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px size as specified
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.setTextColor(0, 0, 0)
     doc.text("YELLOW TYPE FOUNDRY", 50, logoY + logoContainerHeight + 20)
 
@@ -109,16 +109,16 @@ export async function generateQuotationPDF(formData: any) {
 
     // Main title - Large title: 58px, 90% leading, -1.5% tracking
     doc.setFont("YTF Grand 123", "bold")
-    doc.setFontSize(58) // 58px size as specified
+    doc.setFontSize(24) // Increased from 58px to match preview
     doc.text("TYPEFACE LICENSING QUOTATION", 50, logoY + logoContainerHeight + 100)
 
     // License provider section
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("LICENSE PROVIDER", 50, logoY + logoContainerHeight + 140)
 
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6) // 6px size as specified
+    doc.setFontSize(10) // Increased from 6px to match preview
     doc.text("Yellow Type Foundry Company Ltd.", 50, logoY + logoContainerHeight + 150)
     doc.text("No.6, Lane 36, Nguyen Hong Street", 50, logoY + logoContainerHeight + 160)
     doc.text("Lang Ha Ward, Dong Da District, Hanoi, Vietnam", 50, logoY + logoContainerHeight + 170)
@@ -126,41 +126,41 @@ export async function generateQuotationPDF(formData: any) {
 
     // Licensee section
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("LICENSEE / END USER", 545, logoY + logoContainerHeight + 140, { align: "right" })
 
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6) // 6px size as specified
+    doc.setFontSize(10) // Increased from 6px to match preview
     doc.text(formData.clientName, 545, logoY + logoContainerHeight + 150, { align: "right" })
     doc.text(formData.clientEmail, 545, logoY + logoContainerHeight + 160, { align: "right" })
 
     // Billing address
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("BILLING ADDRESS", 545, logoY + logoContainerHeight + 180, { align: "right" })
 
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6) // 6px size as specified
+    doc.setFontSize(10) // Increased from 6px to match preview
     doc.text(formData.clientAddress || "N/A", 545, logoY + logoContainerHeight + 190, { align: "right" })
 
     // Quotation date section
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("QUOTATION DATE", 50, logoY + logoContainerHeight + 210)
 
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6) // 6px size as specified
+    doc.setFontSize(10) // Increased from 6px to match preview
     doc.text(formattedDate, 50, logoY + logoContainerHeight + 220)
     doc.text(`(Valid for 30 days from the issue day)`, 50, logoY + logoContainerHeight + 230)
 
     // Add business size information
     if (selectedBusinessSize) {
       doc.setFont("YTF Grand 123", "bold")
-      doc.setFontSize(14)
+      doc.setFontSize(18) // Increased from 14px to match preview
       doc.text(`${selectedBusinessSize.name} License`, 50, logoY + logoContainerHeight + 260)
 
       doc.setFont("YTF Grand 123", "normal")
-      doc.setFontSize(10)
+      doc.setFontSize(12) // Increased from 10px to match preview
       doc.text(selectedBusinessSize.description, 50, logoY + logoContainerHeight + 280)
     }
 
@@ -168,12 +168,12 @@ export async function generateQuotationPDF(formData: any) {
     let discountY = logoY + logoContainerHeight + 300
     if (formData.nonProfitDiscount || formData.customDiscountPercent > 0) {
       doc.setFont("YTF Grand 123", "bold")
-      doc.setFontSize(10)
+      doc.setFontSize(12) // Increased from 10px to match preview
       doc.text("Applied Discounts:", 50, discountY)
       discountY += 20
 
       doc.setFont("YTF Grand 123", "normal")
-      doc.setFontSize(8)
+      doc.setFontSize(10) // Increased from 8px to match preview
 
       if (formData.nonProfitDiscount) {
         doc.text("• Non-profit / Charity Discount: 30%", 60, discountY)
@@ -211,7 +211,7 @@ export async function generateQuotationPDF(formData: any) {
       startY: discountY + 20,
       theme: "plain",
       styles: {
-        fontSize: 6, // 6px size as specified
+        fontSize: 10, // Increased from 6px to match preview
         cellPadding: 5,
         font: "YTF Grand 123", // Use YTF Grand 123
       },
@@ -220,7 +220,7 @@ export async function generateQuotationPDF(formData: any) {
         textColor: [0, 0, 0],
         fontStyle: "normal",
         font: "YTF Vang Mono", // Use YTF Vang Mono
-        fontSize: 5, // 5px for headers
+        fontSize: 8, // Increased from 5px to match preview
         lineWidth: 0.1,
       },
       columnStyles: {
@@ -235,7 +235,7 @@ export async function generateQuotationPDF(formData: any) {
       didDrawPage: (data) => {
         // Add footer on each page
         doc.setFont("YTF Vang Mono", "normal")
-        doc.setFontSize(5) // 5px for footer
+        doc.setFontSize(8) // Increased from 5px to match preview
         doc.text("©2025 YELLOW TYPE FOUNDRY", 50, 800)
         doc.text("YELLOWTYPE.COM", 297.5, 800, { align: "center" })
         doc.text("STRICTLY CONFIDENTIAL", 545, 800, { align: "right" })
@@ -247,48 +247,48 @@ export async function generateQuotationPDF(formData: any) {
 
     // Add subtotal
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("SUBTOTAL", 50, finalY)
 
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6)
+    doc.setFontSize(10) // Increased from 6px to match preview
     doc.text(`$${formData.subtotal.toFixed(2)}`, 545, finalY, { align: "right" })
 
     // Add tax (labeled as "VIETNAM VALUE ADDED TAX (DEDUCTED)" to match template)
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5)
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("VIETNAM VALUE ADDED TAX (DEDUCTED)", 50, finalY + 15)
 
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6)
+    doc.setFontSize(10) // Increased from 6px to match preview
     doc.text("$0", 545, finalY + 15, { align: "right" })
 
     // Add total in bold
     doc.setFont("YTF Grand 123", "bold")
-    doc.setFontSize(14) // Larger size for total
+    doc.setFontSize(18) // Increased from 14px to match preview
     doc.text("Total (USD):", 50, finalY + 40)
     doc.text(`$${formData.total.toFixed(2)}`, 545, finalY + 40, { align: "right" })
 
     // Add VND conversion
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(10)
+    doc.setFontSize(12) // Increased from 10px to match preview
     const vndAmount = formData.total * 24500 // Fixed exchange rate for PDF
     doc.text(`≈ ${vndAmount.toLocaleString()} VND`, 545, finalY + 60, { align: "right" })
 
     // Add extensions sections
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("EXTENSIONS - INCLUDED", 50, finalY + 80)
     doc.text("EXTENSIONS - EXCLUDED", 545, finalY + 80, { align: "right" })
 
     // Add notes section
     doc.setFont("YTF Vang Mono", "normal")
-    doc.setFontSize(5) // 5px for labels
+    doc.setFontSize(8) // Increased from 5px to match preview
     doc.text("NOTES:", 297.5, finalY + 110, { align: "center" })
 
     // Add standard terms text
     doc.setFont("YTF Grand 123", "normal")
-    doc.setFontSize(6) // 6px size as specified
+    doc.setFontSize(10) // Increased from 6px to match preview
     const termsText =
       "All offers and license agreements from Yellow Type Foundry are governed exclusively by Yellow Type Foundry's General Terms\nand Conditions (EULA), with any conflicting terms from the licensees' general conditions expressly excluded."
     const termsLines = doc.splitTextToSize(termsText, 400)
