@@ -4,18 +4,18 @@
  * In a production environment, you would use a server-side process to convert fonts
  */
 
+import opentype from "opentype.js"
+
 // For now, we'll use a simple approach to convert woff2 to a format jsPDF can use
-export async function convertWoff2ToTtf(woff2Url) {
+export async function convertWoff2ToTtf(woff2Buffer: ArrayBuffer): Promise<ArrayBuffer> {
   try {
-    // In a real implementation, you would use a library like fontkit or opentype.js
-    // to convert the font format server-side
-
-    // For now, we'll just fetch the woff2 file and return its data
-    const response = await fetch(woff2Url)
-    const arrayBuffer = await response.arrayBuffer()
-
-    // Return the buffer (in production, this would be converted to TTF)
-    return arrayBuffer
+    // Load the WOFF2 font
+    const font = await opentype.load(woff2Buffer)
+    
+    // Convert to TTF format
+    const ttfBuffer = font.toArrayBuffer()
+    
+    return ttfBuffer
   } catch (error) {
     console.error("Error converting font:", error)
     throw error

@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 import { businessSizes, formatFileFormats, formatDuration } from "./typeface-data"
+import { convertWoff2ToTtf } from "./font-converter"
 
 // Helper function to convert ArrayBuffer to base64
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -10,6 +11,43 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
     binary += String.fromCharCode(bytes[i])
   }
   return window.btoa(binary)
+}
+
+async function loadCustomFonts() {
+  try {
+    // Load and convert fonts
+    const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.woff2")
+    const grandFontBuffer = await grandFontResponse.arrayBuffer()
+    const grandFontTtf = await convertWoff2ToTtf(grandFontBuffer)
+    
+    const vangMonoResponse = await fetch("/fonts/YTFVangMono-Regular.woff2")
+    const vangMonoBuffer = await vangMonoResponse.arrayBuffer()
+    const vangMonoTtf = await convertWoff2ToTtf(vangMonoBuffer)
+    
+    const oldmanResponse = await fetch("/fonts/YTFOldman-Bold.woff2")
+    const oldmanBuffer = await oldmanResponse.arrayBuffer()
+    const oldmanTtf = await convertWoff2ToTtf(oldmanBuffer)
+
+    // Add fonts to jsPDF
+    const pdf = new jsPDF()
+    
+    // Convert ArrayBuffer to base64 and add to virtual file system
+    pdf.addFileToVFS("YTFGrand123-Regular.ttf", arrayBufferToBase64(grandFontTtf))
+    pdf.addFileToVFS("YTFVangMono-Regular.ttf", arrayBufferToBase64(vangMonoTtf))
+    pdf.addFileToVFS("YTFOldman-Bold.ttf", arrayBufferToBase64(oldmanTtf))
+    
+    // Register fonts
+    pdf.addFont("YTFGrand123-Regular.ttf", "YTFGrand123", "normal")
+    pdf.addFont("YTFVangMono-Regular.ttf", "YTFVangMono", "normal")
+    pdf.addFont("YTFOldman-Bold.ttf", "YTFOldman", "bold")
+    
+    console.log("Custom fonts loaded successfully")
+    return pdf
+  } catch (error) {
+    console.error("Error loading custom fonts:", error)
+    // Fallback to system fonts
+    return new jsPDF()
+  }
 }
 
 // Define the PDF layout based on the provided template and design notes
@@ -24,48 +62,7 @@ export async function generateQuotationPDF(formData: any): Promise<jsPDF> {
 
     // Load custom fonts
     console.log("Loading custom fonts...")
-    try {
-      // Load YTF Grand 123
-      const grandFontResponse = await fetch("/fonts/YTFGrand123-Regular.woff2", { cache: "no-store" })
-      if (!grandFontResponse.ok) {
-        throw new Error(`Failed to load YTF Grand 123 font: ${grandFontResponse.statusText}`)
-      }
-      const grandFontBuffer = await grandFontResponse.arrayBuffer()
-      const grandFontBase64 = arrayBufferToBase64(grandFontBuffer)
-      doc.addFileToVFS("YTFGrand123-Regular.woff2", grandFontBase64)
-      doc.addFont("YTFGrand123-Regular.woff2", "YTF Grand 123", "normal")
-      console.log("YTF Grand 123 font loaded successfully")
-
-      // Load YTF VangMono
-      const vangMonoFontResponse = await fetch("/fonts/YTFVangMono-Regular.woff2", { cache: "no-store" })
-      if (!vangMonoFontResponse.ok) {
-        throw new Error(`Failed to load YTF VangMono font: ${vangMonoFontResponse.statusText}`)
-      }
-      const vangMonoFontBuffer = await vangMonoFontResponse.arrayBuffer()
-      const vangMonoFontBase64 = arrayBufferToBase64(vangMonoFontBuffer)
-      doc.addFileToVFS("YTFVangMono-Regular.woff2", vangMonoFontBase64)
-      doc.addFont("YTFVangMono-Regular.woff2", "YTFVangMono", "normal")
-      console.log("YTF VangMono font loaded successfully")
-
-      // Load YTF Oldman
-      const oldmanFontResponse = await fetch("/fonts/YTFOldman-Bold.woff2", { cache: "no-store" })
-      if (!oldmanFontResponse.ok) {
-        throw new Error(`Failed to load YTF Oldman font: ${oldmanFontResponse.statusText}`)
-      }
-      const oldmanFontBuffer = await oldmanFontResponse.arrayBuffer()
-      const oldmanFontBase64 = arrayBufferToBase64(oldmanFontBuffer)
-      doc.addFileToVFS("YTFOldman-Bold.woff2", oldmanFontBase64)
-      doc.addFont("YTFOldman-Bold.woff2", "YTFOldman", "bold")
-      console.log("YTF Oldman font loaded successfully")
-
-      // Set default font
-      doc.setFont("YTF Grand 123", "normal")
-    } catch (error) {
-      console.error("Error loading fonts:", error)
-      // Fallback to system fonts if custom fonts fail to load
-      console.log("Falling back to system fonts...")
-      doc.setFont("helvetica", "normal")
-    }
+    const pdf = await loadCustomFonts()
 
     // Get the selected business size
     const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize)
