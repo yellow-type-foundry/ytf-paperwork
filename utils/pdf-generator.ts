@@ -28,11 +28,11 @@ export async function generateQuotationPDF(formData: any) {
       console.log("Loading custom fonts...")
       // Load and register custom fonts
       const [vangMonoFont, grandFont] = await Promise.all([
-        fetch("/fonts/YTFVangMono-Regular.woff2").then(res => {
+        fetch("/fonts/YTFVangMono-Regular.woff2", { cache: "no-cache" }).then(res => {
           if (!res.ok) throw new Error(`Failed to load YTFVangMono-Regular.woff2: ${res.status} ${res.statusText}`)
           return res.arrayBuffer()
         }),
-        fetch("/fonts/YTFGrand123-Regular.woff2").then(res => {
+        fetch("/fonts/YTFGrand123-Regular.woff2", { cache: "no-cache" }).then(res => {
           if (!res.ok) throw new Error(`Failed to load YTFGrand123-Regular.woff2: ${res.status} ${res.statusText}`)
           return res.arrayBuffer()
         })

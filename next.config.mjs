@@ -21,6 +21,13 @@ const nextConfig = {
         },
       ],
     })
+
+    // Add rule for font files
+    config.module.rules.push({
+      test: /\.(woff|woff2|eot|ttf|otf)$/i,
+      type: 'asset/resource',
+    })
+
     return config
   },
 }
