@@ -43,20 +43,20 @@ export function PDFPreview({ formData }: { formData: any }) {
   const vndAmount = formData.total * 24500
 
   return (
-    <div className="w-[595px] h-[842px] bg-white inline-flex flex-col justify-start items-center overflow-hidden">
+    <div className="w-[595px] h-[842px] bg-white inline-flex flex-col justify-start items-center overflow-hidden p-8">
       {/* Header */}
-      <div className="self-stretch p-4 flex flex-col items-center">
-        <div className="text-2xl font-bold font-['YTFOldman'] uppercase mb-2">QUOTATION</div>
-        <div className="text-sm font-['YTFVangMono']">
+      <div className="self-stretch flex flex-col items-center mb-12">
+        <div className="ytf-title mb-4">QUOTATION</div>
+        <div className="ytf-label space-y-1">
           <div>Quotation Number: {formData.quotationNumber}</div>
           <div>Date: {formData.quotationDate}</div>
         </div>
       </div>
 
       {/* Client Information */}
-      <div className="self-stretch px-4 mb-4">
-        <div className="text-sm font-['YTFVangMono'] mb-2">Client Information:</div>
-        <div className="text-sm font-['YTF Grand 123']">
+      <div className="self-stretch mb-8">
+        <div className="ytf-label mb-2">Client Information:</div>
+        <div className="ytf-body">
           <div>Name: {formData.clientName}</div>
           <div>Email: {formData.clientEmail}</div>
           {formData.clientAddress && <div>Address: {formData.clientAddress}</div>}
@@ -65,36 +65,36 @@ export function PDFPreview({ formData }: { formData: any }) {
 
       {/* Business Size Information */}
       {selectedBusinessSize && (
-        <div className="self-stretch px-4 mb-4">
-          <div className="text-lg font-bold font-['YTFOldman'] mb-2">{selectedBusinessSize.name} License</div>
-          <div className="text-sm font-['YTF Grand 123']">{selectedBusinessSize.description}</div>
+        <div className="self-stretch mb-8">
+          <div className="ytf-title text-2xl mb-2">{selectedBusinessSize.name} License</div>
+          <div className="ytf-body">{selectedBusinessSize.description}</div>
         </div>
       )}
 
       {/* Items Table */}
-      <div className="self-stretch px-4 mb-4">
-        <table className="w-full text-sm">
-          <thead className="bg-[#E8EADD]">
+      <div className="self-stretch mb-8">
+        <table className="w-full">
+          <thead className="ytf-bg">
             <tr>
-              <th className="p-2 text-left font-['YTFVangMono']">NO</th>
-              <th className="p-2 text-left font-['YTFVangMono']">TYPEFACE</th>
-              <th className="p-2 text-left font-['YTFVangMono']">LICENSE TYPE</th>
-              <th className="p-2 text-left font-['YTFVangMono']">DURATION</th>
-              <th className="p-2 text-left font-['YTFVangMono']">LANGUAGES/CUTS</th>
-              <th className="p-2 text-left font-['YTFVangMono']">FILE FORMAT</th>
-              <th className="p-2 text-right font-['YTFVangMono']">AMOUNT (USD)</th>
+              <th className="p-3 text-left ytf-label">NO</th>
+              <th className="p-3 text-left ytf-label">TYPEFACE</th>
+              <th className="p-3 text-left ytf-label">LICENSE TYPE</th>
+              <th className="p-3 text-left ytf-label">DURATION</th>
+              <th className="p-3 text-left ytf-label">LANGUAGES/CUTS</th>
+              <th className="p-3 text-left ytf-label">FILE FORMAT</th>
+              <th className="p-3 text-right ytf-label">AMOUNT (USD)</th>
             </tr>
           </thead>
           <tbody>
             {formData.items.map((item: any, index: number) => (
               <tr key={index} className="border-b border-gray-200">
-                <td className="p-2 font-['YTF Grand 123']">{`0${index + 1}.`}</td>
-                <td className="p-2 font-['YTF Grand 123']">{item.typeface}</td>
-                <td className="p-2 font-['YTF Grand 123']">{item.licenseType}</td>
-                <td className="p-2 font-['YTF Grand 123']">{formatDuration(item.durationType, item.durationYears)}</td>
-                <td className="p-2 font-['YTF Grand 123']">{item.languageCut}</td>
-                <td className="p-2 font-['YTF Grand 123']">{formatFileFormats(item.fileFormats)}</td>
-                <td className="p-2 font-['YTF Grand 123'] text-right">${Number.parseFloat(String(item.amount)).toFixed(2)}</td>
+                <td className="p-3 ytf-body">{`0${index + 1}.`}</td>
+                <td className="p-3 ytf-body">{item.typeface}</td>
+                <td className="p-3 ytf-body">{item.licenseType}</td>
+                <td className="p-3 ytf-body">{formatDuration(item.durationType, item.durationYears)}</td>
+                <td className="p-3 ytf-body">{item.languageCut}</td>
+                <td className="p-3 ytf-body">{formatFileFormats(item.fileFormats)}</td>
+                <td className="p-3 ytf-body text-right">${Number.parseFloat(String(item.amount)).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -102,27 +102,27 @@ export function PDFPreview({ formData }: { formData: any }) {
       </div>
 
       {/* Totals */}
-      <div className="self-stretch px-4 mb-4">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="font-['YTFVangMono']">SUBTOTAL</span>
-          <span className="font-['YTF Grand 123']">${formData.subtotal.toFixed(2)}</span>
+      <div className="self-stretch mb-8">
+        <div className="flex justify-between mb-2">
+          <span className="ytf-label">SUBTOTAL</span>
+          <span className="ytf-subtotal">${formData.subtotal.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-sm mb-2">
-          <span className="font-['YTFVangMono']">VIETNAM VALUE ADDED TAX (DEDUCTED)</span>
-          <span className="font-['YTF Grand 123']">$0</span>
+        <div className="flex justify-between mb-2">
+          <span className="ytf-label">VIETNAM VALUE ADDED TAX (DEDUCTED)</span>
+          <span className="ytf-subtotal">$0</span>
         </div>
-        <div className="flex justify-between text-lg font-bold mt-4">
-          <span className="font-['YTFOldman']">Total (USD):</span>
-          <span className="font-['YTFOldman']">${formData.total.toFixed(2)}</span>
+        <div className="flex justify-between mt-4">
+          <span className="ytf-total">Total (USD):</span>
+          <span className="ytf-total">${formData.total.toFixed(2)}</span>
         </div>
-        <div className="text-right text-sm mt-2">
-          <span className="font-['YTF Grand 123']">≈ {vndAmount.toLocaleString()} VND</span>
+        <div className="text-right mt-2">
+          <span className="ytf-body">≈ {vndAmount.toLocaleString()} VND</span>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="self-stretch px-4 mt-auto mb-4 text-xs font-['YTFVangMono']">
-        <div className="flex justify-between">
+      <div className="self-stretch mt-auto">
+        <div className="flex justify-between ytf-footer">
           <span>©2025 YELLOW TYPE FOUNDRY</span>
           <span>YELLOWTYPE.COM</span>
           <span>STRICTLY CONFIDENTIAL</span>

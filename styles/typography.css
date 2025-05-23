@@ -28,8 +28,8 @@
 /* Exact typography classes from Figma */
 .ytf-title {
   font-family: "YTF Oldman", sans-serif;
-  font-size: 58px;
-  line-height: 0.9;
+  font-size: 32px;
+  line-height: 1.1;
   letter-spacing: -0.015em;
   font-weight: bold;
   text-transform: uppercase;
@@ -37,8 +37,8 @@
 
 .ytf-label {
   font-family: "YTF VangMono", monospace;
-  font-size: 5px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 1.4;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   font-weight: normal;
@@ -46,7 +46,7 @@
 
 .ytf-body {
   font-family: "YTF Grand", sans-serif;
-  font-size: 6px;
+  font-size: 14px;
   line-height: 1.6;
   letter-spacing: 0.0025em;
   font-weight: normal;
@@ -54,7 +54,7 @@
 
 .ytf-subtotal {
   font-family: "YTF Grand", sans-serif;
-  font-size: 6px;
+  font-size: 14px;
   line-height: 1.6;
   letter-spacing: 0.0025em;
   font-weight: normal;
@@ -62,15 +62,15 @@
 
 .ytf-total {
   font-family: "YTF Grand", sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.2;
   font-weight: bold;
 }
 
 .ytf-footer {
   font-family: "YTF VangMono", monospace;
-  font-size: 5px;
-  line-height: 1;
+  font-size: 10px;
+  line-height: 1.4;
   letter-spacing: -0.01em;
 }
 
