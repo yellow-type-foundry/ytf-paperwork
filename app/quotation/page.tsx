@@ -644,9 +644,6 @@ export default function QuotationPage() {
       // Use our PDF generator utility
       const doc = await generateQuotationPDF(formData)
 
-      // Save the PDF
-      const fileName = `YTF-Quotation-${formData.quotationNumber}.pdf`
-      
       // Create a blob from the PDF
       const pdfBlob = doc.output('blob')
       
@@ -656,7 +653,7 @@ export default function QuotationPage() {
       // Create a temporary link element
       const link = document.createElement('a')
       link.href = pdfUrl
-      link.download = fileName
+      link.download = `YTF-Quotation-${formData.quotationNumber}.pdf`
       
       // Append the link to the document
       document.body.appendChild(link)
