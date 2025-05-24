@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import Link from "next/link"
 import { FileText } from "lucide-react"
 
@@ -16,7 +16,6 @@ export default function PaperworkDashboard() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Quotation</CardTitle>
-            <CardDescription>Generate and preview typeface licensing quotations</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
@@ -33,7 +32,6 @@ export default function PaperworkDashboard() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>EULA Editor</CardTitle>
-            <CardDescription>Generate and preview End User License Agreements for font licensing</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">

@@ -9,15 +9,19 @@
 }
 
 @font-face {
-  font-family: "YTF Millie Mono";
-  src: url("/fonts/YTFVangMono-Regular.woff2") format("woff2");
+  font-family: "YTF Vang Mono";
+  src: url("/fonts/YTFVangMono-Regular.woff2") format("woff2"),
+       url("/fonts/YTFVangMono-Regular.woff") format("woff"),
+       url("/fonts/YTFVangMono-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "YTF Grand 123";
-  src: url("/fonts/YTFGrand123-Regular.woff2") format("woff2");
+  src: url("/fonts/YTFGrand123-Regular.woff2") format("woff2"),
+       url("/fonts/YTFGrand123-Regular.woff") format("woff"),
+       url("/fonts/YTFGrand123-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -107,4 +111,27 @@
 
 .font-grand {
   font-family: "YTF Grand 123", serif;
+}
+
+.ytf-form-label {
+  font-family: "YTF Vang Mono", monospace;
+  font-size: 12px;
+  color: #000;
+  letter-spacing: normal;
+  line-height: 1;
+  font-weight: normal;
+}
+
+.ytf-form-input {
+  font-family: "YTF Grand 123", serif;
+  font-size: 12px;
+  color: #000;
+  letter-spacing: normal;
+  line-height: 1;
+  font-weight: normal;
+}
+
+.ytf-form-input::placeholder {
+  color: rgba(0,0,0,0.4);
+  opacity: 1;
 }

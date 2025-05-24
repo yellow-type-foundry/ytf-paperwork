@@ -930,119 +930,164 @@ export default function QuotationPage() {
             </CardHeader>
             <CardContent className="p-0 space-y-4">
               <div className="mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="clientName" className="flex items-center">
-                    Client Name <span className="text-red-500 ml-1">*</span>
-                  </Label>
-                  <Input
-                    id="clientName"
-                    name="clientName"
-                    value={formData.clientName}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    placeholder="Herb Lubalin"
-                    className={errors.clientName && touchedFields.clientName ? "border-red-500" : ""}
-                  />
-                  {errors.clientName && touchedFields.clientName && (
-                    <div className="text-red-500 text-sm flex items-center mt-1">
-                      <AlertCircle className="h-4 w-4 mr-1" />
-                      {errors.clientName}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="clientName" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        Client Name <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="clientName"
+                        name="clientName"
+                        value={formData.clientName}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        placeholder="Herb Lubalin"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                        autoComplete="off"
+                      />
                     </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="clientEmail" className="flex items-center">
-                    Email <span className="text-red-500 ml-1">*</span>
-                  </Label>
-                  <Input
-                    id="clientEmail"
-                    name="clientEmail"
-                    type="email"
-                    value={formData.clientEmail}
-                    onChange={handleInputChange}
-                    onBlur={handleBlur}
-                    placeholder="name@email.com"
-                    className={errors.clientEmail && touchedFields.clientEmail ? "border-red-500" : ""}
-                      autoComplete="email"
-                  />
-                  {errors.clientEmail && touchedFields.clientEmail && (
-                    <div className="text-red-500 text-sm flex items-center mt-1">
-                      <AlertCircle className="h-4 w-4 mr-1" />
-                      {errors.clientEmail}
+                    {errors.clientName && touchedFields.clientName && (
+                      <div className="text-red-500 text-sm flex items-center mt-1">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors.clientName}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="clientEmail" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        Email <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="clientEmail"
+                        name="clientEmail"
+                        type="email"
+                        value={formData.clientEmail}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        placeholder="name@email.com"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                        autoComplete="email"
+                      />
                     </div>
-                  )}
+                    {errors.clientEmail && touchedFields.clientEmail && (
+                      <div className="text-red-500 text-sm flex items-center mt-1">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors.clientEmail}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
               </div>
               <div className="mb-6">
-              <div className="space-y-2">
-                  <Label htmlFor="businessSize" className="flex items-center">
+                <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                  <label htmlFor="businessSize" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
                     Business Size <span className="text-red-500 ml-1">*</span>
-                  </Label>
-                  <Select
+                  </label>
+                  <select
+                    id="businessSize"
+                    name="businessSize"
                     value={formData.businessSize}
-                    onValueChange={handleBusinessSizeChange}
-                    onOpenChange={handleBusinessSizeBlur}
+                    onChange={e => handleBusinessSizeChange(e.target.value)}
+                    onBlur={handleBusinessSizeBlur}
+                    className="ytf-form-input flex-1 bg-transparent border-none outline-none appearance-none"
                   >
-                    <SelectTrigger
-                      id="businessSize"
-                      className={errors.businessSize && touchedFields.businessSize ? "border-red-500" : ""}
-                    >
-                      <SelectValue placeholder="Select business size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {businessSizes.map((size) => (
-                        <SelectItem key={size.id} value={size.id}>
-                          {size.name}
-                          {size.multiplier ? ` (${size.multiplier}×)` : ""}
-                          {size.description ? ` – ${size.description}` : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.businessSize && touchedFields.businessSize && (
-                    <div className="text-red-500 text-sm flex items-center mt-1">
-                      <AlertCircle className="h-4 w-4 mr-1" />
-                      {errors.businessSize}
-                    </div>
-                  )}
+                    <option value="" disabled>Select business size</option>
+                    {businessSizes.map((size) => (
+                      <option key={size.id} value={size.id}>
+                        {size.name}{size.multiplier ? ` (${size.multiplier}×)` : ""}{size.description ? ` – ${size.description}` : ""}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+                {errors.businessSize && touchedFields.businessSize && (
+                  <div className="text-red-500 text-sm flex items-center mt-1">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {errors.businessSize}
+                  </div>
+                )}
               </div>
               <div className="mb-6">
-                <Label>Billing Address</Label>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                  <Input
-                    name="billingAddress.country"
-                    value={formData.billingAddress.country}
-                  onChange={handleInputChange}
-                    placeholder="Country"
-                  />
-                  <Input
-                    name="billingAddress.city"
-                    value={formData.billingAddress.city}
-                    onChange={handleInputChange}
-                    placeholder="City"
-                  />
-                  <Input
-                    name="billingAddress.state"
-                    value={formData.billingAddress.state}
-                    onChange={handleInputChange}
-                    placeholder="State/Province/Region"
-                  />
-                  <Input
-                    name="billingAddress.postalCode"
-                    value={formData.billingAddress.postalCode}
-                    onChange={handleInputChange}
-                    placeholder="Postal/ZIP Code"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="billingAddress-country" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        Country <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="billingAddress-country"
+                        name="billingAddress.country"
+                        value={formData.billingAddress.country}
+                        onChange={handleInputChange}
+                        placeholder="Country"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="billingAddress-city" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        City <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="billingAddress-city"
+                        name="billingAddress.city"
+                        value={formData.billingAddress.city}
+                        onChange={handleInputChange}
+                        placeholder="City"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="billingAddress-state" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        State/Province/Region <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="billingAddress-state"
+                        name="billingAddress.state"
+                        value={formData.billingAddress.state}
+                        onChange={handleInputChange}
+                        placeholder="State/Province/Region"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <Input
-                  name="billingAddress.streetNumber"
-                  value={formData.billingAddress.streetNumber}
-                  onChange={handleInputChange}
-                  placeholder="Street number"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="billingAddress-streetNumber" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        Street number <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="billingAddress-streetNumber"
+                        name="billingAddress.streetNumber"
+                        value={formData.billingAddress.streetNumber}
+                        onChange={handleInputChange}
+                        placeholder="Street number"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
+                      <label htmlFor="billingAddress-postalCode" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
+                        Postal/ZIP Code <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <input
+                        id="billingAddress-postalCode"
+                        name="billingAddress.postalCode"
+                        value={formData.billingAddress.postalCode}
+                        onChange={handleInputChange}
+                        placeholder="Postal/ZIP Code"
+                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
