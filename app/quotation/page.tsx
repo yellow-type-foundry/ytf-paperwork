@@ -64,7 +64,7 @@ export default function QuotationPage() {
         licenseType: "Individual License (No commercial use)",
         durationType: "perpetual", // "perpetual" or "custom"
         durationYears: 1, // Number of years for custom duration
-        languageCut: "Latin, Medium",
+        languageCut: "Latin, Roman", // Set to match style
         fileFormats: ["otf_ttf"], // Set default to OTF, TTF
         basePrice: 100.0, // Set base price for YTF Gióng
         amount: 100.0, // Set initial amount
@@ -414,26 +414,14 @@ export default function QuotationPage() {
     const newTouchedItems = [...touchedFields.items]
     const newItemErrors = [...errors.items]
 
-    // Handle typeface family selection
     if (field === "typefaceFamily") {
-      // Find the selected typeface family
       const selectedTypeface = getTypefaceByFamily(value)
-
-      // Update available variants
       if (selectedTypeface) {
         newAvailableVariants[index] = selectedTypeface.variants
-
-        // Set default variant if available
         if (selectedTypeface.variants.length > 0) {
           newItems[index].typefaceVariant = selectedTypeface.variants[0]
-
-          // Update language/cut based on the variant
-          newItems[index].languageCut = getLanguageCutForVariant(selectedTypeface.variants[0])
-
-          // Set base price
+          newItems[index].languageCut = `Latin, ${selectedTypeface.variants[0]}`
           newItems[index].basePrice = selectedTypeface.basePrice
-
-          // Calculate amount based on business size, file formats, duration, and discounts
           newItems[index].amount =
             calculateLicensePrice(
               selectedTypeface.basePrice,
@@ -445,19 +433,13 @@ export default function QuotationPage() {
               formData.customDiscountPercent,
             ) || 0
         }
-
-        // Update the full typeface name
         newItems[index].typeface =
           value + (newItems[index].typefaceVariant ? ` ${newItems[index].typefaceVariant}` : "")
       }
     }
 
-    // Handle typeface variant selection
     if (field === "typefaceVariant") {
-      // Update language/cut based on the variant
-      newItems[index].languageCut = getLanguageCutForVariant(value)
-
-      // Update the full typeface name
+      newItems[index].languageCut = `Latin, ${value}`
       newItems[index].typeface = newItems[index].typefaceFamily + (value ? ` ${value}` : "")
     }
 
@@ -530,26 +512,28 @@ export default function QuotationPage() {
   }
 
   const addItem = () => {
+    const defaultTypeface = getTypefaceByFamily("YTF Gióng")
+    const defaultVariant = defaultTypeface?.variants[0] || "Roman"
     setFormData((prev) => ({
       ...prev,
       items: [
         ...prev.items,
         {
-          typefaceFamily: "",
-          typefaceVariant: "",
-          typeface: "",
+          typefaceFamily: "YTF Gióng",
+          typefaceVariant: defaultVariant,
+          typeface: `YTF Gióng ${defaultVariant}`,
           licenseType: businessSizes.find((size) => size.id === prev.businessSize)?.name || "Individual License",
           durationType: "perpetual",
           durationYears: 1,
-          languageCut: "Latin, Medium",
-          fileFormats: ["otf_ttf"], // Set default to OTF, TTF
-          basePrice: 0,
-          amount: 0,
+          languageCut: `Latin, ${defaultVariant}`,
+          fileFormats: ["otf_ttf"],
+          basePrice: defaultTypeface?.basePrice || 100.0,
+          amount: defaultTypeface?.basePrice || 100.0,
         },
       ],
     }))
 
-    setAvailableVariants((prev) => [...prev, []])
+    setAvailableVariants((prev) => [...prev, defaultTypeface?.variants || ["Roman", "Italic"]])
 
     setTouchedFields((prev) => ({
       ...prev,
