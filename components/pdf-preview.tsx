@@ -21,6 +21,9 @@ function PDFPreview({ formData }: { formData: any }) {
           [formData.billingAddress?.city, formData.billingAddress?.state, formData.billingAddress?.postalCode].filter(Boolean).join(", "),
           formData.billingAddress?.country
         ].filter(Boolean).join("\n"),
+        businessSize: typeof formData.businessSize === 'string'
+          ? businessSizes.find(size => size.id === formData.businessSize) || { name: '', description: '' }
+          : formData.businessSize,
       };
       const instance = pdf(<QuotationDocument data={previewData} />);
       const blob = await instance.toBlob();

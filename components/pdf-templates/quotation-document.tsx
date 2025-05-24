@@ -268,11 +268,12 @@ interface QuotationDocumentProps {
 }
 
 // Reusable components
-const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress }: {
+const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress, businessSize }: {
   licensee: { name: string; email: string; address?: string },
   quotationDate: string,
   validityDate: string,
-  billingAddress?: string
+  billingAddress?: string,
+  businessSize?: { name: string; description: string }
 }) => (
   <View style={{ flexDirection: 'row', width: 595, height: 210, margin: '0 auto' }}>
     {/* License Provider Container */}
@@ -293,7 +294,12 @@ const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress }: 
       {/* Licensee Info */}
       <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
         <Text style={[styles.footnote, { color: COLORS.contentSecondary, textAlign: 'right' }]}>LICENSEE / END USER</Text>
-        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{(licensee.name || "") + (licensee.email ? "\n" + licensee.email : "")}</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>
+          {(licensee.name || "") + (licensee.email ? "\n" + licensee.email : "")}
+          {businessSize && businessSize.name && businessSize.description && (
+            "\n" + `${businessSize.name.split(" ")[0]}—Business (${businessSize.description.replace(/.*(fewer than|more than) ([0-9>]+) employees.*/i, (m, type, count) => type === 'fewer than' ? `No more than ${count} employees` : `More than ${count} employees`)})`
+          )}
+        </Text>
       </View>
       {/* Billing Address Info */}
       <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
@@ -511,6 +517,7 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
           quotationDate={formattedDate}
           validityDate={`Valid until ${new Date(new Date(safeData.quotationDate).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
           billingAddress={safeData.clientAddress}
+          businessSize={safeData.businessSize}
         />
 
         {/* Table Section */}

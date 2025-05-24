@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -245,7 +245,7 @@ export default function QuotationPage() {
     const licenseType =
       selectedBusinessSize.id === "individual"
         ? "Individual License (No commercial use)"
-        : `${selectedBusinessSize.name} License (${selectedBusinessSize.employeeCount} employees)`
+        : `${selectedBusinessSize.name.split(" ")[0]} Business License`
 
     // Update all items with the new license type and recalculate prices
     const updatedItems = formData.items.map((item) => {
@@ -723,6 +723,12 @@ export default function QuotationPage() {
     ) || 0
 
     // Build the new items array
+    const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize);
+    const licenseType =
+      selectedBusinessSize?.id === "individual"
+        ? "Individual License (No commercial use)"
+        : `${selectedBusinessSize?.name.split(" ")[0]} Business License`;
+
     const newItems = [
       ...formData.items,
       {
@@ -733,7 +739,7 @@ export default function QuotationPage() {
         fileFormats,
         basePrice,
         amount,
-        licenseType: businessSizes.find((size) => size.id === formData.businessSize)?.name || "Individual License",
+        licenseType,
         durationType,
         durationYears,
       },
