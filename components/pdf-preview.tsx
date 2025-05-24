@@ -11,7 +11,18 @@ function PDFPreview({ formData }: { formData: any }) {
     async function generatePdf() {
       const { pdf } = await import("@react-pdf/renderer");
       const { QuotationDocument } = await import("./pdf-templates/quotation-document");
-      const instance = pdf(<QuotationDocument data={formData} />);
+      // Format billing address for preview
+      const previewData = {
+        ...formData,
+        clientAddress: [
+          formData.billingAddress?.streetNumber,
+          formData.billingAddress?.address1,
+          formData.billingAddress?.address2,
+          [formData.billingAddress?.city, formData.billingAddress?.state, formData.billingAddress?.postalCode].filter(Boolean).join(", "),
+          formData.billingAddress?.country
+        ].filter(Boolean).join("\n"),
+      };
+      const instance = pdf(<QuotationDocument data={previewData} />);
       const blob = await instance.toBlob();
       url = URL.createObjectURL(blob);
       if (isMounted) setPdfUrl(url);

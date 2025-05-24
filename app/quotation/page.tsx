@@ -24,9 +24,70 @@ import {
   getDurationPricingExplanation,
 } from "@/utils/typeface-data"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Worker } from "worker-loader!@/utils/pdf-worker"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 const PDFPreview = dynamic(() => import("@/components/pdf-preview"), { ssr: false })
+
+// Add type definitions
+interface FormItem {
+  typefaceFamily: string
+  typefaceVariant: string
+  fileFormats: string[]
+  typeface: string
+  licenseType: string
+  durationType: string
+  durationYears: number
+  languageCut: string
+  basePrice: number
+  amount: number
+}
+
+interface FormData {
+  clientName: string
+  clientEmail: string
+  clientAddress: string
+  quotationNumber: string
+  quotationDate: string
+  businessSize: string
+  nonProfitDiscount: boolean
+  customDiscountPercent: number
+  items: FormItem[]
+  subtotal: number
+  tax: number
+  total: number
+  billingAddress: {
+    streetNumber: string
+    address1: string
+    address2: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+  }
+}
+
+// Update TouchedFields interface to use a type for item fields
+type ItemTouchedFields = {
+  [K in keyof FormItem]: boolean
+}
+
+type ItemErrors = {
+  [K in keyof FormItem]: string
+}
+
+interface TouchedFields {
+  clientName: boolean
+  clientEmail: boolean
+  businessSize: boolean
+  items: ItemTouchedFields[]
+}
+
+interface Errors {
+  clientName: string
+  clientEmail: string
+  businessSize: string
+  items: ItemErrors[]
+}
 
 export default function QuotationPage() {
   const router = useRouter()
@@ -73,22 +134,53 @@ export default function QuotationPage() {
     subtotal: 100.0, // Set initial subtotal
     tax: 0, // Vietnam value added tax (deducted)
     total: 100.0, // Set initial total
+    billingAddress: {
+      streetNumber: "",
+      address1: "",
+      address2: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+    },
   })
 
   // Track touched fields for validation
+  const defaultTouchedItem = {
+    typefaceFamily: false,
+    typefaceVariant: false,
+    fileFormats: false,
+    typeface: false,
+    licenseType: false,
+    durationType: false,
+    durationYears: false,
+    languageCut: false,
+    basePrice: false,
+    amount: false,
+  }
+  const defaultErrorItem = {
+    typefaceFamily: "",
+    typefaceVariant: "",
+    fileFormats: "",
+    typeface: "",
+    licenseType: "",
+    durationType: "",
+    durationYears: "",
+    languageCut: "",
+    basePrice: "",
+    amount: "",
+  }
   const [touchedFields, setTouchedFields] = useState({
     clientName: false,
     clientEmail: false,
     businessSize: false,
-    items: [{ typefaceFamily: false, typefaceVariant: false, fileFormats: false }],
+    items: [ { ...defaultTouchedItem } ],
   })
-
-  // Track validation errors
   const [errors, setErrors] = useState({
     clientName: "",
     clientEmail: "",
     businessSize: "",
-    items: [{ typefaceFamily: "", typefaceVariant: "", fileFormats: "" }],
+    items: [ { ...defaultErrorItem } ],
   })
 
   // Track available variants for each item
@@ -175,8 +267,8 @@ export default function QuotationPage() {
     }))
   }, [formData.nonProfitDiscount, formData.customDiscountPercent])
 
-  // Validate a single field
-  const validateField = (name, value) => {
+  // Update validateField with proper types
+  const validateField = (name: keyof FormData, value: string): string => {
     switch (name) {
       case "clientName":
         return value.trim() === "" ? "Client name is required" : ""
@@ -191,52 +283,63 @@ export default function QuotationPage() {
     }
   }
 
-  // Validate an item field
-  const validateItemField = (index, field, value) => {
-    if (field === "typefaceFamily" && value.trim() === "") {
+  // Update validateItemField with proper types
+  const validateItemField = (index: number, field: keyof FormItem, value: string | string[]): string => {
+    if (field === "typefaceFamily" && typeof value === "string" && value.trim() === "") {
       return "Typeface family is required"
     }
-    if (field === "typefaceVariant" && value.trim() === "") {
+    if (field === "typefaceVariant" && typeof value === "string" && value.trim() === "") {
       return "Typeface variant is required"
     }
-    if (field === "fileFormats" && (!value || value.length === 0)) {
+    if (field === "fileFormats" && Array.isArray(value) && value.length === 0) {
       return "At least one file format is required"
     }
     return ""
   }
 
-  // Handle input change with validation
-  const handleInputChange = (e) => {
+  // Update handleInputChange with proper types
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // If the field has been touched, validate it
-    if (touchedFields[name]) {
-      setErrors((prev) => ({
+    if (name.startsWith("billingAddress.")) {
+      const field = name.replace("billingAddress.", "")
+      setFormData((prev) => ({
         ...prev,
-        [name]: validateField(name, value),
+        billingAddress: {
+          ...prev.billingAddress,
+          [field]: value,
+        },
       }))
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }))
+    }
+
+    // If the field has been touched, validate it (for global fields only)
+    if (name === "clientName" || name === "clientEmail" || name === "businessSize") {
+      if (touchedFields[name as keyof TouchedFields]) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: validateField(name as keyof FormData, value),
+        }))
+      }
     }
   }
 
-  // Handle custom discount change
-  const handleCustomDiscountChange = (e) => {
+  // Update handleCustomDiscountChange with proper types
+  const handleCustomDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseFloat(e.target.value) || 0
     // Limit discount to 0-100%
     const limitedValue = Math.min(Math.max(value, 0), 100)
     setFormData((prev) => ({ ...prev, customDiscountPercent: limitedValue }))
   }
 
-  // Handle non-profit discount change
-  const handleNonProfitDiscountChange = (checked) => {
+  // Update handleNonProfitDiscountChange with proper types
+  const handleNonProfitDiscountChange = (checked: boolean) => {
     setFormData((prev) => ({ ...prev, nonProfitDiscount: checked }))
   }
 
-  // Handle business size change
-  const handleBusinessSizeChange = (value) => {
+  // Update handleBusinessSizeChange with proper types
+  const handleBusinessSizeChange = (value: string) => {
     setFormData((prev) => ({ ...prev, businessSize: value }))
-
-    // If the field has been touched, validate it
     if (touchedFields.businessSize) {
       setErrors((prev) => ({
         ...prev,
@@ -245,17 +348,19 @@ export default function QuotationPage() {
     }
   }
 
-  // Handle blur event to mark field as touched
-  const handleBlur = (e) => {
+  // Update handleBlur with proper types
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setTouchedFields((prev) => ({
-      ...prev,
-      [name]: true,
-    }))
-    setErrors((prev) => ({
-      ...prev,
-      [name]: validateField(name, value),
-    }))
+    if (name === "clientName" || name === "clientEmail" || name === "businessSize") {
+      setTouchedFields((prev) => ({
+        ...prev,
+        [name]: true,
+      }))
+      setErrors((prev) => ({
+        ...prev,
+        [name]: validateField(name as keyof FormData, value),
+      }))
+    }
   }
 
   // Handle business size blur
@@ -270,8 +375,8 @@ export default function QuotationPage() {
     }))
   }
 
-  // Handle file format checkbox change
-  const handleFileFormatChange = (index, formatId, checked) => {
+  // Update handleFileFormatChange with proper types
+  const handleFileFormatChange = (index: number, formatId: string, checked: boolean) => {
     const newItems = [...formData.items]
     let newFileFormats = [...newItems[index].fileFormats]
 
@@ -332,8 +437,8 @@ export default function QuotationPage() {
     }
   }
 
-  // Handle duration type change
-  const handleDurationTypeChange = (index, value) => {
+  // Update handleDurationTypeChange with proper types
+  const handleDurationTypeChange = (index: number, value: string) => {
     const newItems = [...formData.items]
 
     // Update the duration type
@@ -368,8 +473,8 @@ export default function QuotationPage() {
     }))
   }
 
-  // Handle duration years change
-  const handleDurationYearsChange = (index, value) => {
+  // Update handleDurationYearsChange with proper types
+  const handleDurationYearsChange = (index: number, value: string) => {
     const years = Number.parseInt(value) || 1
     // Ensure years is at least 1
     const limitedYears = Math.max(years, 1)
@@ -408,22 +513,25 @@ export default function QuotationPage() {
     }))
   }
 
-  const handleItemChange = (index, field, value) => {
+  // Update handleItemChange to handle number type correctly
+  const handleItemChange = (index: number, field: keyof FormItem, value: string | number | string[]) => {
     const newItems = [...formData.items]
     const newAvailableVariants = [...availableVariants]
     const newTouchedItems = [...touchedFields.items]
     const newItemErrors = [...errors.items]
 
     if (field === "typefaceFamily") {
-      const selectedTypeface = getTypefaceByFamily(value)
+      const selectedTypeface = getTypefaceByFamily(value as string)
       if (selectedTypeface) {
         newAvailableVariants[index] = selectedTypeface.variants
         if (selectedTypeface.variants.length > 0) {
-          newItems[index].typefaceVariant = selectedTypeface.variants[0]
-          newItems[index].languageCut = `Latin, ${selectedTypeface.variants[0]}`
-          newItems[index].basePrice = selectedTypeface.basePrice
-          newItems[index].amount =
-            calculateLicensePrice(
+          newItems[index] = {
+            ...newItems[index],
+            typefaceVariant: selectedTypeface.variants[0],
+            languageCut: `Latin, ${selectedTypeface.variants[0]}`,
+            basePrice: selectedTypeface.basePrice,
+            typeface: `${value} ${selectedTypeface.variants[0]}`,
+            amount: calculateLicensePrice(
               selectedTypeface.basePrice,
               formData.businessSize,
               newItems[index].fileFormats,
@@ -431,24 +539,32 @@ export default function QuotationPage() {
               newItems[index].durationYears,
               formData.nonProfitDiscount,
               formData.customDiscountPercent,
-            ) || 0
+            ) || 0,
+          }
         }
-        newItems[index].typeface =
-          value + (newItems[index].typefaceVariant ? ` ${newItems[index].typefaceVariant}` : "")
       }
     }
 
     if (field === "typefaceVariant") {
-      newItems[index].languageCut = `Latin, ${value}`
-      newItems[index].typeface = newItems[index].typefaceFamily + (value ? ` ${value}` : "")
+      newItems[index] = {
+        ...newItems[index],
+        languageCut: `Latin, ${value}`,
+        typeface: `${newItems[index].typefaceFamily} ${value}`,
+      }
     }
 
     // Handle amount change directly
     if (field === "amount") {
-      newItems[index].amount = Number.parseFloat(value) || 0
+      newItems[index] = {
+        ...newItems[index],
+        amount: Number(value) || 0,
+      }
     } else {
       // Update the field value
-      newItems[index][field] = value
+      newItems[index] = {
+        ...newItems[index],
+        [field]: value,
+      }
     }
 
     // Calculate subtotal and total
@@ -471,7 +587,7 @@ export default function QuotationPage() {
     ) {
       newItemErrors[index] = {
         ...newItemErrors[index],
-        [field]: validateItemField(index, field, value),
+        [field]: validateItemField(index, field, value as string | string[]),
       }
 
       setErrors((prev) => ({
@@ -481,16 +597,27 @@ export default function QuotationPage() {
     }
   }
 
-  // Handle select change for dropdown fields
-  const handleSelectChange = (index, field, value) => {
+  // Update handleSelectChange with proper types
+  const handleSelectChange = (index: number, field: keyof FormItem, value: string) => {
     handleItemChange(index, field, value)
   }
 
-  // Handle blur for item fields
-  const handleItemBlur = (index, field, value) => {
+  // Update handleItemBlur to use proper type assertions
+  const handleItemBlur = (index: number, field: keyof FormItem, value: string | string[] | number) => {
     const newTouchedItems = [...touchedFields.items]
     if (!newTouchedItems[index]) {
-      newTouchedItems[index] = { typefaceFamily: false, typefaceVariant: false, fileFormats: false }
+      newTouchedItems[index] = {
+        typefaceFamily: false,
+        typefaceVariant: false,
+        fileFormats: false,
+        typeface: false,
+        licenseType: false,
+        durationType: false,
+        durationYears: false,
+        languageCut: false,
+        basePrice: false,
+        amount: false,
+      } as ItemTouchedFields
     }
     newTouchedItems[index][field] = true
 
@@ -501,9 +628,20 @@ export default function QuotationPage() {
 
     const newItemErrors = [...errors.items]
     if (!newItemErrors[index]) {
-      newItemErrors[index] = { typefaceFamily: "", typefaceVariant: "", fileFormats: "" }
+      newItemErrors[index] = {
+        typefaceFamily: "",
+        typefaceVariant: "",
+        fileFormats: "",
+        typeface: "",
+        licenseType: "",
+        durationType: "",
+        durationYears: "",
+        languageCut: "",
+        basePrice: "",
+        amount: "",
+      } as ItemErrors
     }
-    newItemErrors[index][field] = validateItemField(index, field, value)
+    newItemErrors[index][field] = validateItemField(index, field, value as string | string[])
 
     setErrors((prev) => ({
       ...prev,
@@ -522,31 +660,29 @@ export default function QuotationPage() {
           typefaceFamily: "YTF Gióng",
           typefaceVariant: defaultVariant,
           typeface: `YTF Gióng ${defaultVariant}`,
-          licenseType: businessSizes.find((size) => size.id === prev.businessSize)?.name || "Individual License",
-          durationType: "perpetual",
-          durationYears: 1,
           languageCut: `Latin, ${defaultVariant}`,
           fileFormats: ["otf_ttf"],
           basePrice: defaultTypeface?.basePrice || 100.0,
           amount: defaultTypeface?.basePrice || 100.0,
+          licenseType: businessSizes.find((size) => size.id === prev.businessSize)?.name || "Individual License",
+          durationType: "perpetual",
+          durationYears: 1,
         },
       ],
     }))
-
     setAvailableVariants((prev) => [...prev, defaultTypeface?.variants || ["Roman", "Italic"]])
-
     setTouchedFields((prev) => ({
       ...prev,
-      items: [...prev.items, { typefaceFamily: false, typefaceVariant: false, fileFormats: false }],
+      items: [...prev.items, { ...defaultTouchedItem }],
     }))
-
     setErrors((prev) => ({
       ...prev,
-      items: [...prev.items, { typefaceFamily: "", typefaceVariant: "", fileFormats: "" }],
+      items: [...prev.items, { ...defaultErrorItem }],
     }))
   }
 
-  const removeItem = (index) => {
+  // Update removeItem with proper types
+  const removeItem = (index: number) => {
     if (formData.items.length === 1) return
 
     const newItems = formData.items.filter((_, i) => i !== index)
@@ -588,20 +724,22 @@ export default function QuotationPage() {
         typefaceFamily: validateItemField(index, "typefaceFamily", item.typefaceFamily),
         typefaceVariant: validateItemField(index, "typefaceVariant", item.typefaceVariant),
         fileFormats: validateItemField(index, "fileFormats", item.fileFormats),
+        typeface: "",
+        licenseType: "",
+        durationType: "",
+        durationYears: "",
+        languageCut: "",
+        basePrice: "",
+        amount: "",
       })),
     }
-
     setErrors(newErrors)
-
-    // Mark all fields as touched
     setTouchedFields({
       clientName: true,
       clientEmail: true,
       businessSize: true,
-      items: formData.items.map(() => ({ typefaceFamily: true, typefaceVariant: true, fileFormats: true })),
+      items: formData.items.map(() => ({ ...defaultTouchedItem })),
     })
-
-    // Check if there are any errors
     return (
       !newErrors.clientName &&
       !newErrors.clientEmail &&
@@ -746,7 +884,9 @@ export default function QuotationPage() {
                   <SelectContent>
                     {businessSizes.map((size) => (
                       <SelectItem key={size.id} value={size.id}>
-                        {size.name} {size.multiplier ? `(${size.multiplier}×)` : ""}
+                        {size.name}
+                        {size.multiplier ? ` (${size.multiplier}×)` : ""}
+                        {size.description ? ` – ${size.description}` : ""}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -756,9 +896,6 @@ export default function QuotationPage() {
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.businessSize}
                   </div>
-                )}
-                {selectedBusinessSize && (
-                  <p className="text-xs text-muted-foreground mt-1">{selectedBusinessSize.description}</p>
                 )}
               </div>
             </CardContent>
@@ -814,14 +951,38 @@ export default function QuotationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="clientAddress">Billing Address</Label>
-                <Textarea
-                  id="clientAddress"
-                  name="clientAddress"
-                  value={formData.clientAddress}
+                <Label>Billing Address</Label>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                  <Input
+                    name="billingAddress.country"
+                    value={formData.billingAddress.country}
+                    onChange={handleInputChange}
+                    placeholder="Country"
+                  />
+                  <Input
+                    name="billingAddress.city"
+                    value={formData.billingAddress.city}
+                    onChange={handleInputChange}
+                    placeholder="City"
+                  />
+                  <Input
+                    name="billingAddress.state"
+                    value={formData.billingAddress.state}
+                    onChange={handleInputChange}
+                    placeholder="State/Province/Region"
+                  />
+                  <Input
+                    name="billingAddress.postalCode"
+                    value={formData.billingAddress.postalCode}
+                    onChange={handleInputChange}
+                    placeholder="Postal/ZIP Code"
+                  />
+                </div>
+                <Input
+                  name="billingAddress.streetNumber"
+                  value={formData.billingAddress.streetNumber}
                   onChange={handleInputChange}
-                  placeholder="Client's billing address (optional)"
-                  rows={2}
+                  placeholder="Street number"
                 />
               </div>
             </CardContent>
@@ -887,7 +1048,7 @@ export default function QuotationPage() {
                       {errors.items[index]?.typefaceFamily && touchedFields.items[index]?.typefaceFamily && (
                         <div className="text-red-500 text-sm flex items-center mt-1">
                           <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.items[index].typefaceFamily}
+                          {errors.items[index]?.typefaceFamily}
                         </div>
                       )}
                     </div>
@@ -898,22 +1059,14 @@ export default function QuotationPage() {
                       <Select
                         value={item.typefaceVariant}
                         onValueChange={(value) => handleSelectChange(index, "typefaceVariant", value)}
-                        disabled={!item.typefaceFamily}
                         onOpenChange={() => {
                           if (!touchedFields.items[index]?.typefaceVariant) {
                             handleItemBlur(index, "typefaceVariant", item.typefaceVariant)
                           }
                         }}
                       >
-                        <SelectTrigger
-                          id={`item-${index}-variant`}
-                          className={
-                            errors.items[index]?.typefaceVariant && touchedFields.items[index]?.typefaceVariant
-                              ? "border-red-500"
-                              : ""
-                          }
-                        >
-                          <SelectValue placeholder="Select variant" />
+                        <SelectTrigger id={`item-${index}-variant`} className={errors.items[index]?.typefaceVariant && touchedFields.items[index]?.typefaceVariant ? "border-red-500" : ""}>
+                          <SelectValue placeholder="Select style" />
                         </SelectTrigger>
                         <SelectContent>
                           {availableVariants[index]?.map((variant) => (
@@ -926,7 +1079,7 @@ export default function QuotationPage() {
                       {errors.items[index]?.typefaceVariant && touchedFields.items[index]?.typefaceVariant && (
                         <div className="text-red-500 text-sm flex items-center mt-1">
                           <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.items[index].typefaceVariant}
+                          {errors.items[index]?.typefaceVariant}
                         </div>
                       )}
                     </div>
@@ -1002,7 +1155,7 @@ export default function QuotationPage() {
                           <Checkbox
                             id={`item-${index}-format-${format.id}`}
                             checked={item.fileFormats.includes(format.id)}
-                            onCheckedChange={(checked) => handleFileFormatChange(index, format.id, checked)}
+                            onCheckedChange={(checked) => handleFileFormatChange(index, format.id, Boolean(checked))}
                             onBlur={() => handleItemBlur(index, "fileFormats", item.fileFormats)}
                           />
                           <Label
@@ -1017,7 +1170,7 @@ export default function QuotationPage() {
                     {errors.items[index]?.fileFormats && touchedFields.items[index]?.fileFormats && (
                       <div className="text-red-500 text-sm flex items-center mt-1">
                         <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.items[index].fileFormats}
+                        {errors.items[index]?.fileFormats}
                       </div>
                     )}
                     {item.fileFormats.length > 1 && (

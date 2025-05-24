@@ -92,7 +92,7 @@ const headingStyle = {
   fontWeight: "bold",
   textTransform: 'uppercase' as const,
   textAlign: 'center' as const,
-  letterSpacing: -0.5,
+  letterSpacing: -0.6,
   lineHeight: 1.0,
   margin: 0,
   padding: 0,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.3,
     borderColor: COLORS.outlinePrimary,
     paddingVertical: SPACING.vertical,
-    letterSpacing: -0.5,
+    letterSpacing: -0.6,
     lineHeight: 1,
     margin: 0,
     padding: 0,
@@ -293,8 +293,7 @@ const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress }: 
       {/* Licensee Info */}
       <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
         <Text style={[styles.footnote, { color: COLORS.contentSecondary, textAlign: 'right' }]}>LICENSEE / END USER</Text>
-        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{licensee.name}</Text>
-        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{licensee.email}</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{(licensee.name || "") + (licensee.email ? "\n" + licensee.email : "")}</Text>
       </View>
       {/* Billing Address Info */}
       <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
@@ -384,11 +383,10 @@ const QuotationTableHeader = () => (
 const QuotationRowContainer = ({ index, item }: { index: number, item: QuotationItem }) => {
   // File format logic
   let fileFormats = String(item.fileFormats || "");
-  fileFormats = fileFormats.replace(/otf_ttf/gi, "OTF, TTF").replace(/woff_woff2/gi, "WOFF, WOFF2");
-  let fileFormatLines = [fileFormats];
-  if (/WOFF/i.test(fileFormats) || /WOFF2/i.test(fileFormats)) {
-    fileFormatLines = fileFormats.split(/,\s*/);
-  }
+  const displayFormat = fileFormats.includes('woff') && fileFormats.includes('woff2') 
+    ? "OTF, TTF, WOFF, WOFF2"
+    : "OTF, TTF";
+
   // Duration logic
   const duration = item.duration && item.duration.trim() ? item.duration : 'Perpetual';
   return (
@@ -398,11 +396,7 @@ const QuotationRowContainer = ({ index, item }: { index: number, item: Quotation
       <Text style={[styles.bodyPrimary, { width: '18%', paddingHorizontal: 8, paddingVertical: 8 }]}>{item.licenseType}</Text>
       <Text style={[styles.bodyPrimary, { width: '13%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'center' }]}>{duration}</Text>
       <Text style={[styles.bodyPrimary, { width: '15%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>{item.languageCut}</Text>
-      <Text style={[styles.bodyPrimary, { width: '15%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}> {
-        fileFormatLines.length > 1
-          ? fileFormatLines.map((f, i) => <Text key={i}>{f}</Text>)
-          : fileFormatLines[0]
-      }</Text>
+      <Text style={[styles.bodyPrimary, { width: '15%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>{displayFormat}</Text>
       <Text style={[styles.bodyPrimary, { width: '14%', textAlign: 'right', paddingHorizontal: 8, paddingVertical: 8 }]}>${item.amount.toFixed(2)}</Text>
     </View>
   );
@@ -437,10 +431,11 @@ const TotalRow = ({ total }: { total: number }) => (
       fontWeight: 'light',
       fontSize: 20,
       lineHeight: 1,
-      letterSpacing: -0.005,
+      letterSpacing: -0.01,
       textAlign: 'left',
       paddingHorizontal: 8,
-      paddingVertical: 8,
+      paddingTop: 6,
+      paddingBottom: 10,
     }}>Total (USD)</Text>
     <Text style={{
       flex: 1,
@@ -448,10 +443,11 @@ const TotalRow = ({ total }: { total: number }) => (
       fontWeight: 'light',
       fontSize: 20,
       lineHeight: 1,
-      letterSpacing: -0.005,
+      letterSpacing: -0.01,
       textAlign: 'right',
       paddingHorizontal: 8,
-      paddingVertical: 8,
+      paddingTop: 6,
+      paddingBottom: 10,
     }}>{`$${total.toFixed(2)}`}</Text>
   </View>
 )

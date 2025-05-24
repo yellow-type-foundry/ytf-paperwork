@@ -1,5 +1,6 @@
+import React from "react"
 import { pdf } from "@react-pdf/renderer"
-import { QuotationDocument } from "@/components/pdf-templates/quotation-document"
+import { QuotationDocument } from "../components/pdf-templates/quotation-document"
 import { businessSizes } from "./typeface-data"
 
 interface QuotationData {
@@ -65,7 +66,13 @@ export async function generateQuotationPDF(formData: any): Promise<Blob> {
       quotationDate: formData.quotationDate || "",
       clientName: formData.clientName || "",
       clientEmail: formData.clientEmail || "",
-      clientAddress: formData.clientAddress || "",
+      clientAddress: [
+        formData.billingAddress?.streetNumber,
+        formData.billingAddress?.address1,
+        formData.billingAddress?.address2,
+        [formData.billingAddress?.city, formData.billingAddress?.state, formData.billingAddress?.postalCode].filter(Boolean).join(", "),
+        formData.billingAddress?.country
+      ].filter(Boolean).join("\n"),
       businessSize: businessSizes.find(size => size.id === formData.businessSize),
       items: (formData.items || []).map((item: any) => {
         const safeItem = {
