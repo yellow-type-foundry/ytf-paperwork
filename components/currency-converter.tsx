@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Loader2 } from "lucide-react"
-import { useUsdToVndRate } from "@/utils/exchange-rate"
 
 interface CurrencyConverterProps {
   amount: number
@@ -11,61 +10,20 @@ interface CurrencyConverterProps {
 }
 
 export function CurrencyConverter({ amount, from, to }: CurrencyConverterProps) {
-  // Use live VCB rate for USD→VND
-  const { rate: vcbRate, loading: vcbLoading, error: vcbError } = useUsdToVndRate();
-  const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [convertedAmount, setConvertedAmount] = useState<number | null>(null)
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null)
 
   useEffect(() => {
+    let rate = 1;
     if (from === 'USD' && to === 'VND') {
-      if (vcbLoading) {
-        setConvertedAmount(null);
-        setExchangeRate(null);
-        setError(null);
-        return;
-      }
-      if (vcbError || !vcbRate) {
-        setError('Failed to fetch exchange rate. Using estimated rate.');
-        const estimatedRate = 24500;
-        setExchangeRate(estimatedRate);
-        setConvertedAmount(amount * estimatedRate);
-        return;
-      }
-      setExchangeRate(vcbRate);
-      setConvertedAmount(amount * vcbRate);
-      setError(null);
-      return;
+      rate = 24500; // Fixed rate
     }
-    // fallback for other conversions (not USD→VND)
-    const fallbackRate = 1;
-    setExchangeRate(fallbackRate);
-    setConvertedAmount(amount * fallbackRate);
-    setError(null);
-  }, [amount, from, to, vcbRate, vcbLoading, vcbError]);
-
-  if (from === 'USD' && to === 'VND' && vcbLoading) {
-    return (
-      <div className="flex items-center text-sm text-muted-foreground">
-        <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-        Converting...
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="text-sm">
-        <span className="text-muted-foreground">
-          ≈ {convertedAmount?.toLocaleString()} {to}
-        </span>
-        <span className="text-xs text-yellow-500 ml-2">(estimated)</span>
-      </div>
-    )
-  }
+    setExchangeRate(rate);
+    setConvertedAmount(amount * rate);
+  }, [amount, from, to]);
 
   if (convertedAmount === null) {
-    return null
+    return null;
   }
 
   return (
@@ -79,5 +37,5 @@ export function CurrencyConverter({ amount, from, to }: CurrencyConverterProps) 
         </span>
       )}
     </div>
-  )
+  );
 }
