@@ -918,7 +918,6 @@ export default function QuotationPage() {
           <Card>
             <CardHeader>
               <CardTitle>Quotation Details</CardTitle>
-              <CardDescription>Basic information about the quotation</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -984,7 +983,6 @@ export default function QuotationPage() {
           <Card>
             <CardHeader>
               <CardTitle>Licensee / End User Information</CardTitle>
-              <CardDescription>Enter the client details for the quotation</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1073,10 +1071,7 @@ export default function QuotationPage() {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between w-full">
-                <div>
-                  <CardTitle>Typefaces</CardTitle>
-                  <CardDescription>Add typefaces to your quotation</CardDescription>
-                </div>
+                <CardTitle>Typefaces</CardTitle>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -1305,7 +1300,6 @@ export default function QuotationPage() {
           <Card>
             <CardHeader>
               <CardTitle>Pricing</CardTitle>
-              <CardDescription>Summary of pricing and discounts</CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
               {/* Pricing Summary */}
@@ -1384,7 +1378,6 @@ export default function QuotationPage() {
           <Card>
             <CardHeader>
               <CardTitle>Quotation Preview</CardTitle>
-              <CardDescription>Preview of how your document will look</CardDescription>
             </CardHeader>
             <CardContent>
               {isClient ? (
@@ -1397,6 +1390,15 @@ export default function QuotationPage() {
                   </div>
                 </div>
               )}
+              <Button
+                className="w-full mt-6 bg-black text-white hover:bg-neutral-800 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                size="lg"
+                onClick={generatePDF}
+                disabled={isGenerating || !isFormValid()}
+              >
+                <Download className="h-5 w-5 mr-2" />
+                Export
+              </Button>
             </CardContent>
           </Card>
         </div>

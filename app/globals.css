@@ -96,3 +96,13 @@
     font-family: var(--font-ytf-vangmono);
   }
 }
+
+/* Mono heading style for card titles */
+.heading-mono {
+  font-family: var(--font-ytf-vangmono), monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  font-weight: 400;
+}

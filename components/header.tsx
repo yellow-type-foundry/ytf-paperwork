@@ -6,7 +6,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold">YTF</span>
+            <img src="/YTF-LOGO.svg" alt="Yellow Type Foundry Logo" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex gap-6">
             <Link href="/quotation" className="text-sm font-medium transition-colors hover:text-primary">
