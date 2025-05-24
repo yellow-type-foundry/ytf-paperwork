@@ -1,5 +1,5 @@
 "use client"
-import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer"
+import { Document, Page, Text, View, StyleSheet, Font, Image, Svg, Path } from "@react-pdf/renderer"
 import { QuotationData } from "@/types"
 
 // Define types
@@ -36,6 +36,13 @@ Font.register({
   fontWeight: "normal"
 })
 
+// Register YTF Grand 123 Light
+Font.register({
+  family: "YTF Grand 123 Light",
+  src: "/fonts/YTFGrand123-Light.ttf",
+  fontWeight: "light"
+})
+
 // Value tokens
 const COLORS = {
   bgPrimary: "#E8EADD",
@@ -45,6 +52,8 @@ const COLORS = {
   totalSection: "#F4F6E9",
   border: "#D6D3D1",
   outlinePrimary: "#CCD0B3",
+  contentSecondary: "#7E7E4E",
+  contentPrimary: "#000000",
 };
 const SPACING = {
   pagePadding: 0,
@@ -54,10 +63,45 @@ const SPACING = {
   borderRadius: 4,
 };
 
+// Define footnote style for reuse
+const footnoteStyle = {
+  fontFamily: 'YTF Vang Mono',
+  fontSize: 5,
+  lineHeight: 1,
+  letterSpacing: -0.005, // -0.5% tracking
+};
+
+// Define body text styles for reuse
+const bodyPrimaryStyle = {
+  fontFamily: 'YTF Grand 123',
+  fontSize: 8,
+  lineHeight: 1.2, // 120%
+  letterSpacing: 0.0025, // 0.25% tracking
+};
+const bodySecondaryStyle = {
+  fontFamily: 'YTF Grand 123',
+  fontSize: 6,
+  lineHeight: 1.6, // 160%
+  letterSpacing: 0.0025, // 0.25% tracking
+};
+
+// Define heading style for Oldman title
+const headingStyle = {
+  fontFamily: "YTF Oldman",
+  fontSize: 62,
+  fontWeight: "bold",
+  textTransform: 'uppercase' as const,
+  textAlign: 'center' as const,
+  letterSpacing: -0.5,
+  lineHeight: 1.0,
+  margin: 0,
+  padding: 0,
+};
+
 // Create styles
 const styles = StyleSheet.create({
   page: {
-    padding: SPACING.pagePadding,
+    padding: 0,
     fontFamily: "YTF Grand 123",
     backgroundColor: COLORS.bgPrimary,
   },
@@ -70,10 +114,8 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.vertical,
   },
   headerText: {
-    fontFamily: "YTF Vang Mono",
-    fontSize: 10,
+    ...footnoteStyle,
     textTransform: "uppercase",
-    letterSpacing: 1,
   },
   title: {
     fontFamily: "YTF Oldman",
@@ -81,13 +123,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textTransform: "uppercase",
     textAlign: "center",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
     borderColor: COLORS.outlinePrimary,
     paddingVertical: SPACING.vertical,
     letterSpacing: -0.5,
-    marginHorizontal: SPACING.horizontal,
-    marginBottom: SPACING.vertical,
+    lineHeight: 1,
+    margin: 0,
+    padding: 0,
   },
   infoBlock: {
     flexDirection: "row",
@@ -95,14 +138,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.horizontal,
     paddingVertical: SPACING.vertical,
     backgroundColor: COLORS.infoBlock,
-    marginBottom: SPACING.vertical,
+    marginBottom: 0,
   },
   infoCol: {
     flex: 1,
   },
   infoLabel: {
-    fontFamily: "YTF Vang Mono",
-    fontSize: 9,
+    ...footnoteStyle,
     textTransform: "uppercase",
     opacity: 0.5,
     marginBottom: 2,
@@ -113,11 +155,11 @@ const styles = StyleSheet.create({
     lineHeight: 1.2,
   },
   section: {
-    marginBottom: 4,
+    marginBottom: 0,
   },
   row: {
     flexDirection: "row",
-    marginBottom: 5,
+    marginBottom: 0,
   },
   label: {
     width: "30%",
@@ -128,24 +170,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   table: {
-    marginHorizontal: 4,
+    marginHorizontal: 0,
     marginBottom: 0,
   },
   tableHeader: {
     flexDirection: "row",
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.3,
     borderBottomColor: COLORS.outlinePrimary,
     paddingBottom: 4,
-    marginBottom: 4,
+    marginBottom: 0,
     backgroundColor: COLORS.tableHeader,
   },
   tableRow: {
     flexDirection: "row",
     minHeight: 24,
     alignItems: "center",
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.3,
     borderBottomColor: COLORS.outlinePrimary,
-    marginBottom: 4,
+    marginBottom: 0,
   },
   tableCell: {
     fontSize: 10,
@@ -158,7 +200,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgSecondary,
     marginHorizontal: SPACING.horizontal,
     marginTop: SPACING.vertical,
-    marginBottom: SPACING.vertical,
+    marginBottom: 0,
     padding: SPACING.vertical,
     borderRadius: SPACING.borderRadius,
   },
@@ -166,11 +208,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 2,
+    marginBottom: 0,
   },
   totalLabel: {
-    fontFamily: "YTF Vang Mono",
-    fontSize: 10,
+    ...footnoteStyle,
     textTransform: "uppercase",
   },
   totalValue: {
@@ -191,13 +232,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingBottom: 4,
     paddingTop: 4,
+    marginBottom: 0,
   },
   notesLabel: {
-    fontFamily: 'YTF Vang Mono',
-    fontSize: 8,
+    ...footnoteStyle,
     textTransform: 'uppercase',
     textAlign: 'center',
-    marginBottom: 2,
+    marginBottom: 0,
   },
   notesText: {
     fontFamily: 'YTF Grand 123',
@@ -210,12 +251,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 4,
     paddingBottom: 4,
+    marginBottom: 0,
   },
   footerText: {
-    fontFamily: 'YTF Vang Mono',
-    fontSize: 8,
+    ...footnoteStyle,
     textTransform: 'uppercase',
   },
+  footnote: footnoteStyle,
+  bodyPrimary: bodyPrimaryStyle,
+  bodySecondary: bodySecondaryStyle,
+  heading: headingStyle,
 })
 
 interface QuotationDocumentProps {
@@ -223,22 +268,39 @@ interface QuotationDocumentProps {
 }
 
 // Reusable components
-const InfoBlock = ({ licensee }: { licensee: { name: string; email: string; address?: string } }) => (
-  <View style={styles.infoBlock}>
-    {/* Provider Info */}
-    <View style={styles.infoCol}>
-      <Text style={styles.infoLabel}>License Provider</Text>
-      <Text style={styles.infoValue}>Yellow Type Foundry Company Ltd.</Text>
-      <Text style={styles.infoValue}>No.6, Lane 36, Nguyen Hong Street</Text>
-      <Text style={styles.infoValue}>Lang Ha Ward, Dong Da District, Hanoi, Vietnam</Text>
-      <Text style={styles.infoValue}>Tax ID 0109884491</Text>
+const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress }: {
+  licensee: { name: string; email: string; address?: string },
+  quotationDate: string,
+  validityDate: string,
+  billingAddress?: string
+}) => (
+  <View style={{ flexDirection: 'row', width: 595, height: 210, margin: '0 auto' }}>
+    {/* License Provider Container */}
+    <View style={{ width: 297.5, flexDirection: 'column' }}>
+      {/* License Provider Info */}
+      <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', overflow: 'hidden', gap: 8 }}>
+        <Text style={[styles.footnote, { color: COLORS.contentSecondary }]}>LICENSE PROVIDER</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary }]}>Yellow Type Foundry Company Ltd.{"\n"}No.6, Lane 36, Nguyen Hong Street{"\n"}Lang Ha Ward, Dong Da District, Hanoi, Vietnam{"\n"}Tax ID 0109884491</Text>
+      </View>
+      {/* Quotation Date Info */}
+      <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', overflow: 'hidden', gap: 8 }}>
+        <Text style={[styles.footnote, { color: COLORS.contentSecondary }]}>QUOTATION DATE</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary }]}>{`${quotationDate}. ${validityDate}`}</Text>
+      </View>
     </View>
-    {/* Licensee Info */}
-    <View style={styles.infoCol}>
-      <Text style={styles.infoLabel}>Licensee</Text>
-      <Text style={styles.infoValue}>{licensee.name}</Text>
-      <Text style={styles.infoValue}>{licensee.email}</Text>
-      {licensee.address && <Text style={styles.infoValue}>{licensee.address}</Text>}
+    {/* Licensee Info Container */}
+    <View style={{ width: 297.5, flexDirection: 'column' }}>
+      {/* Licensee Info */}
+      <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
+        <Text style={[styles.footnote, { color: COLORS.contentSecondary, textAlign: 'right' }]}>LICENSEE / END USER</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{licensee.name}</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{licensee.email}</Text>
+      </View>
+      {/* Billing Address Info */}
+      <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
+        <Text style={[styles.footnote, { color: COLORS.contentSecondary, textAlign: 'right' }]}>BILLING ADDRESS</Text>
+        <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>{billingAddress || 'N/A'}</Text>
+      </View>
     </View>
   </View>
 )
@@ -247,6 +309,135 @@ const SectionRow = ({ label, value }: { label: string; value: string }) => (
   <View style={styles.row}>
     <Text style={styles.label}>{label}</Text>
     <Text style={styles.value}>{value}</Text>
+  </View>
+)
+
+// Logo component for PDF
+const LogoComponent = () => (
+  <View style={{ height: 32, padding: 8, alignItems: 'center', justifyContent: 'center' }}>
+    <Svg width="29" height="16" viewBox="0 0 29 17">
+      <Path d="M8.45437 11.6261H10.8617L9.33844 8.26746L7.96474 -0.203903H5.92459L6.97187 4.99041L3.39481 -0.203903H0.756226L6.91747 8.18587L8.45437 11.6261ZM11.8954 16.4261H14.3436V11.6261H17.0638V9.65442H14.3436V6.58134H17.2814V4.59608H11.8954V16.4261ZM21.6745 -0.203903L20.7497 1.79496H22.7898L18.2335 11.6261H20.7225L25.2924 1.79496H27.3325L28.2438 -0.203903H21.6745Z" fill="black" />
+    </Svg>
+  </View>
+)
+
+// PageTitle component
+const PageTitle = ({ children }: { children: React.ReactNode }) => (
+  <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: -1, borderBottomWidth: 0.3, borderColor: COLORS.outlinePrimary, paddingBottom: 0 }}>
+    <Text style={{ ...styles.heading, transform: 'translateY(-8px)' }}>{children}</Text>
+  </View>
+)
+
+// PageInfoTop component
+const PageInfoTop = ({ quotationNumber, formattedDate }: { quotationNumber: string; formattedDate: string }) => (
+  <View style={{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 8,
+    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
+    borderColor: COLORS.outlinePrimary,
+  }}>
+    <Text style={[styles.footnote, { textTransform: 'uppercase' }]}>Yellow Type Foundry</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase' }]}>{`Quotation No. ${quotationNumber}`}</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase' }]}>{`Issued on ${formattedDate}`}</Text>
+  </View>
+)
+
+// QuotationTableHeader component
+const QuotationTableHeader = () => (
+  <View style={{
+    flexDirection: 'row',
+    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
+    borderColor: COLORS.outlinePrimary,
+    marginBottom: 0,
+    backgroundColor: COLORS.tableHeader,
+  }}>
+    <Text style={[styles.footnote, { width: '7%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>No</Text>
+    <Text style={[styles.footnote, { width: '18%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>Typeface</Text>
+    <Text style={[styles.footnote, { width: '18%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>License Type</Text>
+    <Text style={[styles.footnote, { width: '13%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'center' }]}>Duration</Text>
+    <Text style={[styles.footnote, { width: '15%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>Languages/Cuts</Text>
+    <Text style={[styles.footnote, { width: '15%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>File Format</Text>
+    <Text style={[styles.footnote, { width: '14%', textAlign: 'right', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>Amount</Text>
+  </View>
+)
+
+// QuotationRowContainer component
+const QuotationRowContainer = ({ index, item }: { index: number, item: QuotationItem }) => {
+  // File format logic
+  let fileFormats = String(item.fileFormats || "");
+  fileFormats = fileFormats.replace(/otf_ttf/gi, "OTF, TTF").replace(/woff_woff2/gi, "WOFF, WOFF2");
+  let fileFormatLines = [fileFormats];
+  if (/WOFF/i.test(fileFormats) || /WOFF2/i.test(fileFormats)) {
+    fileFormatLines = fileFormats.split(/,\s*/);
+  }
+  // Duration logic
+  const duration = item.duration && item.duration.trim() ? item.duration : 'Perpetual';
+  return (
+    <View style={styles.tableRow}>
+      <Text style={[styles.footnote, { width: '7%', paddingHorizontal: 8, paddingVertical: 8 }]}>{`0${index + 1}.`}</Text>
+      <Text style={[styles.bodyPrimary, { width: '18%', paddingHorizontal: 8, paddingVertical: 8 }]}>{item.typeface}</Text>
+      <Text style={[styles.bodyPrimary, { width: '18%', paddingHorizontal: 8, paddingVertical: 8 }]}>{item.licenseType}</Text>
+      <Text style={[styles.bodyPrimary, { width: '13%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'center' }]}>{duration}</Text>
+      <Text style={[styles.bodyPrimary, { width: '15%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>{item.languageCut}</Text>
+      <Text style={[styles.bodyPrimary, { width: '15%', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}> {
+        fileFormatLines.length > 1
+          ? fileFormatLines.map((f, i) => <Text key={i}>{f}</Text>)
+          : fileFormatLines[0]
+      }</Text>
+      <Text style={[styles.bodyPrimary, { width: '14%', textAlign: 'right', paddingHorizontal: 8, paddingVertical: 8 }]}>${item.amount.toFixed(2)}</Text>
+    </View>
+  );
+}
+
+// VATSummaryRow component
+const VATSummaryRow = () => (
+  <View style={{ flexDirection: 'row', alignItems: 'center', minHeight: 24 }}>
+    <Text style={[styles.footnote, { flex: 1, paddingHorizontal: 8, paddingVertical: 4, textTransform: 'uppercase' }]}>Vietnam Value Added Tax (Deducted)</Text>
+    <Text style={[styles.bodyPrimary, { flex: 1, textAlign: 'right', paddingHorizontal: 8, paddingVertical: 4 }]}>$0</Text>
+  </View>
+)
+
+// TotalSummaryRow component
+const TotalSummaryRow = ({ total }: { total: number }) => (
+  <View style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 24,
+  }}>
+    <Text style={[styles.footnote, { flex: 1, paddingHorizontal: 8, paddingVertical: 4 }]}>SUBTOTAL</Text>
+    <Text style={[styles.bodyPrimary, { flex: 1, textAlign: 'right', paddingHorizontal: 8, paddingVertical: 4 }]}>{`$${total.toFixed(2)}`}</Text>
+  </View>
+)
+
+// TotalRow component
+const TotalRow = ({ total }: { total: number }) => (
+  <View style={{ flexDirection: 'row', alignItems: 'center', minHeight: 28, backgroundColor: COLORS.bgSecondary }}>
+    <Text style={{
+      flex: 1,
+      fontFamily: 'YTF Grand 123 Light',
+      fontWeight: 'light',
+      fontSize: 20,
+      lineHeight: 1,
+      letterSpacing: -0.005,
+      textAlign: 'left',
+      paddingHorizontal: 8,
+      paddingVertical: 8,
+    }}>Total (USD)</Text>
+    <Text style={{
+      flex: 1,
+      fontFamily: 'YTF Grand 123 Light',
+      fontWeight: 'light',
+      fontSize: 20,
+      lineHeight: 1,
+      letterSpacing: -0.005,
+      textAlign: 'right',
+      paddingHorizontal: 8,
+      paddingVertical: 8,
+    }}>{`$${total.toFixed(2)}`}</Text>
   </View>
 )
 
@@ -275,70 +466,31 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* Logo at the top */}
+        <LogoComponent />
         {/* Header Row */}
-        <View style={styles.headerRow}>
-          <Text style={styles.headerText}>Yellow Type Foundry</Text>
-          <Text style={styles.headerText}>Quotation No. {safeData.quotationNumber}</Text>
-          <Text style={styles.headerText}>Issued on {formattedDate}</Text>
-        </View>
+        <PageInfoTop quotationNumber={safeData.quotationNumber} formattedDate={formattedDate} />
         {/* Title */}
-        <Text style={styles.title}>Typeface Licensing Quotation</Text>
+        <PageTitle>
+          <Text style={styles.heading}>Typeface Licensing Quotation</Text>
+        </PageTitle>
         {/* Info Blocks */}
-        <InfoBlock licensee={{ name: safeData.clientName, email: safeData.clientEmail, address: safeData.clientAddress }} />
+        <LicenseInfo
+          licensee={{ name: safeData.clientName, email: safeData.clientEmail, address: safeData.clientAddress }}
+          quotationDate={formattedDate}
+          validityDate={`Valid until ${new Date(new Date(safeData.quotationDate).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
+          billingAddress={safeData.clientAddress}
+        />
 
         {/* Table Section */}
         <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableCell, { width: '7%' }]}>No</Text>
-            <Text style={[styles.tableCell, { width: '18%' }]}>Typeface</Text>
-            <Text style={[styles.tableCell, { width: '18%' }]}>License Type</Text>
-            <Text style={[styles.tableCell, { width: '13%' }]}>Duration</Text>
-            <Text style={[styles.tableCell, { width: '15%' }]}>Languages/Cuts</Text>
-            <Text style={[styles.tableCell, { width: '15%' }]}>File Format</Text>
-            <Text style={[styles.tableCell, { width: '14%', textAlign: 'right' }]}>Amount</Text>
-          </View>
+          <QuotationTableHeader />
           {safeData.items.map((item, index) => {
-            // File format logic
-            let fileFormats = String(item.fileFormats || "");
-            fileFormats = fileFormats.replace(/otf_ttf/gi, "OTF, TTF").replace(/woff_woff2/gi, "WOFF, WOFF2");
-            let fileFormatLines = [fileFormats];
-            if (/WOFF/i.test(fileFormats) || /WOFF2/i.test(fileFormats)) {
-              fileFormatLines = fileFormats.split(/,\s*/);
-            }
-            // Duration logic
-            const duration = item.duration && item.duration.trim() ? item.duration : 'Perpetual';
-            return (
-              <View key={index} style={styles.tableRow}>
-                <Text style={[styles.tableCell, { width: '7%' }]}>{`0${index + 1}.`}</Text>
-                <Text style={[styles.tableCell, { width: '18%' }]}>{item.typeface}</Text>
-                <Text style={[styles.tableCell, { width: '18%' }]}>{item.licenseType}</Text>
-                <Text style={[styles.tableCell, { width: '13%' }]}>{duration}</Text>
-                <Text style={[styles.tableCell, { width: '15%' }]}>{item.languageCut}</Text>
-                <Text style={[styles.tableCell, { width: '15%' }]}>
-                  {fileFormatLines.length > 1
-                    ? fileFormatLines.map((f, i) => <Text key={i}>{f}</Text>)
-                    : fileFormatLines[0]}
-                </Text>
-                <Text style={[styles.tableCell, { width: '14%', textAlign: 'right' }]}>${item.amount.toFixed(2)}</Text>
-              </View>
-            );
+            return <QuotationRowContainer key={index} index={index} item={item} />;
           })}
-        </View>
-
-        {/* Totals Section */}
-        <View style={styles.totalSection}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal:</Text>
-            <Text style={styles.totalValue}>${safeData.subtotal.toFixed(2)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>VAT:</Text>
-            <Text style={styles.totalValue}>$0.00</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={[styles.totalLabel, { fontWeight: 'bold' }]}>Total:</Text>
-            <Text style={[styles.totalValue, { fontWeight: 'bold', fontSize: 18 }]}>${safeData.total.toFixed(2)}</Text>
-          </View>
+          <VATSummaryRow />
+          <TotalSummaryRow total={safeData.subtotal} />
+          <TotalRow total={safeData.total} />
         </View>
 
         {/* Notes Section */}
