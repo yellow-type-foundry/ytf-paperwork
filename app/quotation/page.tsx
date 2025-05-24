@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -355,16 +355,16 @@ export default function QuotationPage() {
         },
       }))
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
     // If the field has been touched, validate it (for global fields only)
     if (name === "clientName" || name === "clientEmail" || name === "businessSize") {
       if (touchedFields[name as keyof TouchedFields]) {
-        setErrors((prev) => ({
-          ...prev,
+      setErrors((prev) => ({
+        ...prev,
           [name]: validateField(name as keyof FormData, value),
-        }))
+      }))
       }
     }
   }
@@ -407,14 +407,14 @@ export default function QuotationPage() {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     if (name === "clientName" || name === "clientEmail" || name === "businessSize") {
-      setTouchedFields((prev) => ({
-        ...prev,
-        [name]: true,
-      }))
-      setErrors((prev) => ({
-        ...prev,
+    setTouchedFields((prev) => ({
+      ...prev,
+      [name]: true,
+    }))
+    setErrors((prev) => ({
+      ...prev,
         [name]: validateField(name as keyof FormData, value),
-      }))
+    }))
     }
   }
 
@@ -595,7 +595,7 @@ export default function QuotationPage() {
               formData.nonProfitDiscount,
               formData.customDiscountPercent,
             ) || 0,
-          }
+        }
         }
       }
     }
@@ -914,83 +914,22 @@ export default function QuotationPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Generate Quotation</h1>
-        <p className="text-muted-foreground">Create a typeface licensing quotation</p>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quotation Details</CardTitle>
-            </CardHeader>
+        <div className="lg:col-span-2">
+          <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="quotationNumber">Quotation Number</Label>
-                  <Input
-                    id="quotationNumber"
-                    name="quotationNumber"
-                    value={formData.quotationNumber}
-                    onChange={handleInputChange}
-                    readOnly
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="quotationDate">Issue Date</Label>
-                  <Input
-                    id="quotationDate"
-                    name="quotationDate"
-                    type="date"
-                    value={formData.quotationDate}
-                    readOnly
-                    disabled
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <Label htmlFor="businessSize" className="flex items-center">
-                  Business Size <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select
-                  value={formData.businessSize}
-                  onValueChange={handleBusinessSizeChange}
-                  onOpenChange={handleBusinessSizeBlur}
-                >
-                  <SelectTrigger
-                    id="businessSize"
-                    className={errors.businessSize && touchedFields.businessSize ? "border-red-500" : ""}
-                  >
-                    <SelectValue placeholder="Select business size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {businessSizes.map((size) => (
-                      <SelectItem key={size.id} value={size.id}>
-                        {size.name}
-                        {size.multiplier ? ` (${size.multiplier}×)` : ""}
-                        {size.description ? ` – ${size.description}` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.businessSize && touchedFields.businessSize && (
-                  <div className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.businessSize}
-                  </div>
-                )}
-              </div>
+              {/* Removed Quotation Number and Issue Date fields from the UI as requested */}
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Licensee / End User Information</CardTitle>
+          <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
+            <CardHeader className="p-0">
+              <div className="heading-mono pl-0 pr-2 py-2 border-b border-b-[0.5px] border-outlinePrimary mb-4" style={{ background: 'none' }}>
+                Licensee / End User Information
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-0 space-y-4">
+              <div className="mb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="clientName" className="flex items-center">
@@ -1025,7 +964,7 @@ export default function QuotationPage() {
                     onBlur={handleBlur}
                     placeholder="name@email.com"
                     className={errors.clientEmail && touchedFields.clientEmail ? "border-red-500" : ""}
-                    autoComplete="email"
+                      autoComplete="email"
                   />
                   {errors.clientEmail && touchedFields.clientEmail && (
                     <div className="text-red-500 text-sm flex items-center mt-1">
@@ -1035,14 +974,48 @@ export default function QuotationPage() {
                   )}
                 </div>
               </div>
-
+              </div>
+              <div className="mb-6">
               <div className="space-y-2">
+                  <Label htmlFor="businessSize" className="flex items-center">
+                    Business Size <span className="text-red-500 ml-1">*</span>
+                  </Label>
+                  <Select
+                    value={formData.businessSize}
+                    onValueChange={handleBusinessSizeChange}
+                    onOpenChange={handleBusinessSizeBlur}
+                  >
+                    <SelectTrigger
+                      id="businessSize"
+                      className={errors.businessSize && touchedFields.businessSize ? "border-red-500" : ""}
+                    >
+                      <SelectValue placeholder="Select business size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {businessSizes.map((size) => (
+                        <SelectItem key={size.id} value={size.id}>
+                          {size.name}
+                          {size.multiplier ? ` (${size.multiplier}×)` : ""}
+                          {size.description ? ` – ${size.description}` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.businessSize && touchedFields.businessSize && (
+                    <div className="text-red-500 text-sm flex items-center mt-1">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {errors.businessSize}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mb-6">
                 <Label>Billing Address</Label>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                   <Input
                     name="billingAddress.country"
                     value={formData.billingAddress.country}
-                    onChange={handleInputChange}
+                  onChange={handleInputChange}
                     placeholder="Country"
                   />
                   <Input
@@ -1074,10 +1047,10 @@ export default function QuotationPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between w-full">
-                <CardTitle>Typefaces</CardTitle>
+          <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
+            <CardHeader className="p-0">
+              <div className="flex items-center justify-between w-full pl-0 pr-2 py-2 border-b border-b-[0.5px] border-outlinePrimary mb-4" style={{ background: 'none' }}>
+                <span className="heading-mono">Typefaces</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -1089,7 +1062,7 @@ export default function QuotationPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-0 space-y-6">
               {formData.items.map((item, index) => (
                 <div key={index} className="p-4 border rounded-md">
                   <div className="flex justify-between items-center mb-4">
@@ -1303,11 +1276,13 @@ export default function QuotationPage() {
           </Card>
 
           {/* Pricing Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Pricing</CardTitle>
+          <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
+            <CardHeader className="p-0">
+              <div className="heading-mono pl-0 pr-2 py-2 border-b border-b-[0.5px] border-outlinePrimary" style={{ background: 'none' }}>
+                Pricing
+              </div>
             </CardHeader>
-            <CardContent className="space-y-8">
+            <CardContent className="p-0 space-y-8">
               {/* Pricing Summary */}
               <div className="space-y-2 border-b pb-4">
                 <div className="flex justify-between">
@@ -1332,60 +1307,57 @@ export default function QuotationPage() {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Discounts</h3>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="nonProfitDiscount"
-                      checked={formData.nonProfitDiscount}
-                      onCheckedChange={handleNonProfitDiscountChange}
-                    />
-                    <Label htmlFor="nonProfitDiscount" className="text-sm font-normal cursor-pointer">
-                      Non-profit / Charity Discount (30%)
-                    </Label>
-                  </div>
-                  <div className="text-xs text-muted-foreground ml-6">
-                    Requires proof of non-profit status. Documentation will be requested after quotation.
-                  </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="nonProfitDiscount"
+                  checked={formData.nonProfitDiscount}
+                  onCheckedChange={handleNonProfitDiscountChange}
+                />
+                <Label htmlFor="nonProfitDiscount" className="text-sm font-normal cursor-pointer">
+                  Non-profit / Charity Discount (30%)
+                </Label>
+              </div>
+              <div className="text-xs text-muted-foreground ml-6">
+                Requires proof of non-profit status. Documentation will be requested after quotation.
+              </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="customDiscountPercent">Custom Discount (%)</Label>
-                      <Input
-                        id="customDiscountPercent"
-                        name="customDiscountPercent"
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={formData.customDiscountPercent}
-                        onChange={handleCustomDiscountChange}
-                        placeholder="0"
-                      />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="customDiscountPercent">Custom Discount (%)</Label>
+                  <Input
+                    id="customDiscountPercent"
+                    name="customDiscountPercent"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={formData.customDiscountPercent}
+                    onChange={handleCustomDiscountChange}
+                    placeholder="0"
+                  />
+                </div>
+                {(formData.nonProfitDiscount || formData.customDiscountPercent > 0) && (
+                  <div className="space-y-2 flex items-end">
+                    <div className="p-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md text-sm w-full">
+                      <p className="font-medium text-yellow-800 dark:text-yellow-400">Applied Discounts:</p>
+                      <ul className="mt-1 text-sm">
+                        {formData.nonProfitDiscount && <li>Non-profit / Charity: 30%</li>}
+                        {formData.customDiscountPercent > 0 && (
+                          <li>Custom Discount: {formData.customDiscountPercent}%</li>
+                        )}
+                      </ul>
                     </div>
-                    {(formData.nonProfitDiscount || formData.customDiscountPercent > 0) && (
-                      <div className="space-y-2 flex items-end">
-                        <div className="p-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md text-sm w-full">
-                          <p className="font-medium text-yellow-800 dark:text-yellow-400">Applied Discounts:</p>
-                          <ul className="mt-1 text-sm">
-                            {formData.nonProfitDiscount && <li>Non-profit / Charity: 30%</li>}
-                            {formData.customDiscountPercent > 0 && (
-                              <li>Custom Discount: {formData.customDiscountPercent}%</li>
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    )}
                   </div>
+                )}
+              </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="sticky top-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quotation Preview</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <div className="sticky">
+          <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
+            <CardContent className="p-0">
               {isClient ? (
                 <PDFPreview formData={formData} />
               ) : (
