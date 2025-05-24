@@ -98,6 +98,17 @@ const headingStyle = {
   padding: 0,
 };
 
+const sectionHeadingStyle = {
+  fontFamily: "YTF Oldman",
+  fontSize: 40,
+  fontWeight: "bold",
+  textTransform: 'uppercase' as const,
+  letterSpacing: -0.9, // 90% tracking
+  lineHeight: 1.0,
+  margin: 0,
+  padding: 0,
+};
+
 // Create styles
 const styles = StyleSheet.create({
   page: {
@@ -261,6 +272,7 @@ const styles = StyleSheet.create({
   bodyPrimary: bodyPrimaryStyle,
   bodySecondary: bodySecondaryStyle,
   heading: headingStyle,
+  sectionHeading: sectionHeadingStyle,
 })
 
 interface QuotationDocumentProps {
@@ -269,7 +281,7 @@ interface QuotationDocumentProps {
 
 // Reusable components
 const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress, businessSize }: {
-  licensee: { name: string; email: string; address?: string },
+  licensee: { name: string; companyName?: string; email: string; address?: string },
   quotationDate: string,
   validityDate: string,
   billingAddress?: string,
@@ -295,9 +307,11 @@ const LicenseInfo = ({ licensee, quotationDate, validityDate, billingAddress, bu
       <View style={{ height: 64, padding: 8, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-end', overflow: 'hidden', gap: 8 }}>
         <Text style={[styles.footnote, { color: COLORS.contentSecondary, textAlign: 'right' }]}>LICENSEE / END USER</Text>
         <Text style={[styles.bodySecondary, { color: COLORS.contentPrimary, textAlign: 'right' }]}>
-          {(licensee.name || "") + (licensee.email ? "\n" + licensee.email : "")}
+          {licensee.name || ""}
+          {licensee.companyName ? "\n" + licensee.companyName : ""}
+          {licensee.email ? "\n" + licensee.email : ""}
           {businessSize && businessSize.name && businessSize.description && (
-            "\n" + `${businessSize.name.split(" ")[0]}—Business (${businessSize.description.replace(/.*(fewer than|more than) ([0-9>]+) employees.*/i, (m, type, count) => type === 'fewer than' ? `No more than ${count} employees` : `More than ${count} employees`)})`
+            "\n" + `${businessSize.name.split(" ")[0]} License (No Commercial Use)`
           )}
         </Text>
       </View>
@@ -367,21 +381,23 @@ const PageInfoBottom = () => (
 
 // QuotationTableHeader component
 const QuotationTableHeader = () => (
-  <View style={{
-    flexDirection: 'row',
-    borderTopWidth: 0.3,
-    borderBottomWidth: 0.3,
-    borderColor: COLORS.outlinePrimary,
-    marginBottom: 0,
-    backgroundColor: COLORS.tableHeader,
-  }}>
-    <Text style={[styles.footnote, { width: '7%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>No</Text>
-    <Text style={[styles.footnote, { width: '18%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>Typeface</Text>
-    <Text style={[styles.footnote, { width: '18%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>License Type</Text>
-    <Text style={[styles.footnote, { width: '13%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'center' }]}>Duration</Text>
-    <Text style={[styles.footnote, { width: '15%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>Languages/Cuts</Text>
-    <Text style={[styles.footnote, { width: '15%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>File Format</Text>
-    <Text style={[styles.footnote, { width: '14%', textAlign: 'right', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>Amount</Text>
+  <View>
+    <View style={{
+      flexDirection: 'row',
+      borderTopWidth: 0.3,
+      borderBottomWidth: 0.3,
+      borderColor: COLORS.outlinePrimary,
+      marginBottom: 0,
+      backgroundColor: COLORS.tableHeader,
+    }}>
+      <Text style={[styles.footnote, { width: '7%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>No</Text>
+      <Text style={[styles.footnote, { width: '18%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>Typeface</Text>
+      <Text style={[styles.footnote, { width: '18%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>License Type</Text>
+      <Text style={[styles.footnote, { width: '13%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'center' }]}>Duration</Text>
+      <Text style={[styles.footnote, { width: '15%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>Languages/Cuts</Text>
+      <Text style={[styles.footnote, { width: '15%', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8, textAlign: 'right' }]}>File Format</Text>
+      <Text style={[styles.footnote, { width: '14%', textAlign: 'right', textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 8 }]}>Amount</Text>
+    </View>
   </View>
 )
 
@@ -480,7 +496,7 @@ const ExtensionsRow = ({ included = '', excluded = '' }: { included?: string; ex
 
 export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) => {
   // Ensure we have valid data
-  const safeData: QuotationData = {
+  const safeData: QuotationData & { companyName?: string } = {
     quotationNumber: data?.quotationNumber || "",
     quotationDate: data?.quotationDate || "",
     clientName: data?.clientName || "",
@@ -490,6 +506,7 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
     items: Array.isArray(data?.items) ? data.items : [],
     subtotal: Number(data?.subtotal) || 0,
     total: Number(data?.total) || 0,
+    companyName: data?.companyName || "",
   }
 
   // Format date
@@ -513,7 +530,7 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
         </PageTitle>
         {/* Info Blocks */}
         <LicenseInfo
-          licensee={{ name: safeData.clientName, email: safeData.clientEmail, address: safeData.clientAddress }}
+          licensee={{ name: safeData.clientName, companyName: safeData.companyName, email: safeData.clientEmail, address: safeData.clientAddress }}
           quotationDate={formattedDate}
           validityDate={`Valid until ${new Date(new Date(safeData.quotationDate).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
           billingAddress={safeData.clientAddress}
