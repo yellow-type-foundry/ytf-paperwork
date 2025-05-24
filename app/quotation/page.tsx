@@ -128,12 +128,36 @@ export default function QuotationPage() {
         languageCut: "Latin, Roman", // Set to match style
         fileFormats: ["otf_ttf"], // Set default to OTF, TTF
         basePrice: 100.0, // Set base price for YTF Gióng
-        amount: 100.0, // Set initial amount
+        amount: calculateLicensePrice(
+          100.0,
+          "individual",
+          ["otf_ttf"],
+          "perpetual",
+          1,
+          false,
+          0
+        ) || 0, // Set initial amount using helper
       },
     ],
-    subtotal: 100.0, // Set initial subtotal
+    subtotal: calculateLicensePrice(
+      100.0,
+      "individual",
+      ["otf_ttf"],
+      "perpetual",
+      1,
+      false,
+      0
+    ) || 0, // Set initial subtotal from calculated amount
     tax: 0, // Vietnam value added tax (deducted)
-    total: 100.0, // Set initial total
+    total: calculateLicensePrice(
+      100.0,
+      "individual",
+      ["otf_ttf"],
+      "perpetual",
+      1,
+      false,
+      0
+    ) || 0, // Set initial total from calculated amount
     billingAddress: {
       streetNumber: "",
       address1: "",
@@ -190,6 +214,27 @@ export default function QuotationPage() {
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  // On mount, recalculate all item amounts, subtotal, and total to ensure default values are reflected
+  useEffect(() => {
+    setFormData((prev) => {
+      const updatedItems = prev.items.map((item) => {
+        const amount = calculateLicensePrice(
+          item.basePrice,
+          prev.businessSize,
+          item.fileFormats,
+          item.durationType,
+          item.durationYears,
+          prev.nonProfitDiscount,
+          prev.customDiscountPercent
+        ) || 0;
+        return { ...item, amount };
+      });
+      const subtotal = updatedItems.reduce((sum, item) => sum + (Number.parseFloat(String(item.amount)) || 0), 0);
+      const total = subtotal;
+      return { ...prev, items: updatedItems, subtotal, total };
+    });
+  }, []);
 
   // Update license type based on business size
   useEffect(() => {
@@ -339,12 +384,22 @@ export default function QuotationPage() {
 
   // Update handleBusinessSizeChange with proper types
   const handleBusinessSizeChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, businessSize: value }))
+    setFormData((prev) => {
+      // If the new business size does not allow custom duration, reset durationType and durationYears
+      const allowCustom = ["xl", "custom"].includes(value);
+      const updatedItems = prev.items.map(item => {
+        if (!allowCustom && item.durationType === "custom") {
+          return { ...item, durationType: "perpetual", durationYears: 1 };
+        }
+        return item;
+      });
+      return { ...prev, businessSize: value, items: updatedItems };
+    });
     if (touchedFields.businessSize) {
       setErrors((prev) => ({
         ...prev,
         businessSize: validateField("businessSize", value),
-      }))
+      }));
     }
   }
 
@@ -652,33 +707,57 @@ export default function QuotationPage() {
   const addItem = () => {
     const defaultTypeface = getTypefaceByFamily("YTF Gióng")
     const defaultVariant = defaultTypeface?.variants[0] || "Roman"
+    const basePrice = defaultTypeface?.basePrice || 100.0
+    const fileFormats = ["otf_ttf"]
+    const durationType = "perpetual"
+    const durationYears = 1
+
+    const amount = calculateLicensePrice(
+      basePrice,
+      formData.businessSize,
+      fileFormats,
+      durationType,
+      durationYears,
+      formData.nonProfitDiscount,
+      formData.customDiscountPercent
+    ) || 0
+
+    // Build the new items array
+    const newItems = [
+      ...formData.items,
+      {
+        typefaceFamily: "YTF Gióng",
+        typefaceVariant: defaultVariant,
+        typeface: `YTF Gióng ${defaultVariant}`,
+        languageCut: `Latin, ${defaultVariant}`,
+        fileFormats,
+        basePrice,
+        amount,
+        licenseType: businessSizes.find((size) => size.id === formData.businessSize)?.name || "Individual License",
+        durationType,
+        durationYears,
+      },
+    ];
+
+    // Calculate new subtotal and total
+    const subtotal = newItems.reduce((sum, item) => sum + (Number.parseFloat(String(item.amount)) || 0), 0);
+    const total = subtotal;
+
     setFormData((prev) => ({
       ...prev,
-      items: [
-        ...prev.items,
-        {
-          typefaceFamily: "YTF Gióng",
-          typefaceVariant: defaultVariant,
-          typeface: `YTF Gióng ${defaultVariant}`,
-          languageCut: `Latin, ${defaultVariant}`,
-          fileFormats: ["otf_ttf"],
-          basePrice: defaultTypeface?.basePrice || 100.0,
-          amount: defaultTypeface?.basePrice || 100.0,
-          licenseType: businessSizes.find((size) => size.id === prev.businessSize)?.name || "Individual License",
-          durationType: "perpetual",
-          durationYears: 1,
-        },
-      ],
-    }))
-    setAvailableVariants((prev) => [...prev, defaultTypeface?.variants || ["Roman", "Italic"]])
+      items: newItems,
+      subtotal,
+      total,
+    }));
+    setAvailableVariants((prev) => [...prev, defaultTypeface?.variants || ["Roman", "Italic"]]);
     setTouchedFields((prev) => ({
       ...prev,
       items: [...prev.items, { ...defaultTouchedItem }],
-    }))
+    }));
     setErrors((prev) => ({
       ...prev,
       items: [...prev.items, { ...defaultErrorItem }],
-    }))
+    }));
   }
 
   // Update removeItem with proper types
@@ -835,7 +914,7 @@ export default function QuotationPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Quotation Details</CardTitle>
@@ -861,7 +940,8 @@ export default function QuotationPage() {
                     name="quotationDate"
                     type="date"
                     value={formData.quotationDate}
-                    onChange={handleInputChange}
+                    readOnly
+                    disabled
                   />
                 </div>
               </div>
@@ -899,8 +979,10 @@ export default function QuotationPage() {
                 )}
               </div>
             </CardContent>
+          </Card>
 
-            <CardHeader className="pt-6">
+          <Card>
+            <CardHeader>
               <CardTitle>Licensee / End User Information</CardTitle>
               <CardDescription>Enter the client details for the quotation</CardDescription>
             </CardHeader>
@@ -986,15 +1068,23 @@ export default function QuotationPage() {
                 />
               </div>
             </CardContent>
+          </Card>
 
-            <CardHeader className="pt-6">
-              <div className="flex justify-between items-center">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between w-full">
                 <div>
                   <CardTitle>Typefaces</CardTitle>
                   <CardDescription>Add typefaces to your quotation</CardDescription>
                 </div>
-                <Button size="sm" onClick={addItem} className="bg-yellow-500 hover:bg-yellow-600">
-                  <Plus className="h-4 w-4 mr-1" /> Add Typeface
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={addItem}
+                  aria-label="Add typeface"
+                  className="ml-2"
+                >
+                  <Plus className="h-5 w-5" />
                 </Button>
               </div>
             </CardHeader>
@@ -1088,15 +1178,16 @@ export default function QuotationPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="space-y-2">
                       <Label htmlFor={`item-${index}-license-type`}>License Type</Label>
-                      <Input id={`item-${index}-license-type`} value={item.licenseType} readOnly className="bg-muted" />
+                      <Input id={`item-${index}-license-type`} value={item.licenseType} readOnly disabled className="bg-[#B6B8AA]" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor={`item-${index}-duration-type`}>Duration</Label>
                       <Select
                         value={item.durationType}
                         onValueChange={(value) => handleDurationTypeChange(index, value)}
+                        disabled={!["xl", "custom"].includes(formData.businessSize)}
                       >
-                        <SelectTrigger id={`item-${index}-duration-type`}>
+                        <SelectTrigger id={`item-${index}-duration-type`} className={!["xl", "custom"].includes(formData.businessSize) ? "bg-[#B6B8AA] border-transparent" : ""}>
                           <SelectValue placeholder="Select duration" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1129,7 +1220,7 @@ export default function QuotationPage() {
                     )}
                     <div className="space-y-2">
                       <Label htmlFor={`item-${index}-language-cut`}>Language/Cut</Label>
-                      <Input id={`item-${index}-language-cut`} value={item.languageCut} readOnly className="bg-muted" />
+                      <Input id={`item-${index}-language-cut`} value={item.languageCut} readOnly disabled className="bg-[#B6B8AA]" />
                     </div>
                   </div>
 
@@ -1207,8 +1298,18 @@ export default function QuotationPage() {
                   )}
                 </div>
               ))}
+            </CardContent>
+          </Card>
 
-              <div className="pt-4 border-t space-y-2">
+          {/* Pricing Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Pricing</CardTitle>
+              <CardDescription>Summary of pricing and discounts</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {/* Pricing Summary */}
+              <div className="space-y-2 border-b pb-4">
                 <div className="flex justify-between">
                   <span className="font-medium">Subtotal:</span>
                   <span>${formData.subtotal.toFixed(2)}</span>
@@ -1227,86 +1328,55 @@ export default function QuotationPage() {
                   </div>
                 )}
               </div>
-            </CardContent>
-
-            <CardHeader className="pt-6">
-              <CardTitle>Discounts</CardTitle>
-              <CardDescription>Apply special discounts to this quotation</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="nonProfitDiscount"
-                  checked={formData.nonProfitDiscount}
-                  onCheckedChange={handleNonProfitDiscountChange}
-                />
-                <Label htmlFor="nonProfitDiscount" className="text-sm font-normal cursor-pointer">
-                  Non-profit / Charity Discount (30%)
-                </Label>
-              </div>
-              <div className="text-xs text-muted-foreground ml-6">
-                Requires proof of non-profit status. Documentation will be requested after quotation.
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="customDiscountPercent">Custom Discount (%)</Label>
-                  <Input
-                    id="customDiscountPercent"
-                    name="customDiscountPercent"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formData.customDiscountPercent}
-                    onChange={handleCustomDiscountChange}
-                    placeholder="0"
-                  />
-                </div>
-                {(formData.nonProfitDiscount || formData.customDiscountPercent > 0) && (
-                  <div className="space-y-2 flex items-end">
-                    <div className="p-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md text-sm w-full">
-                      <p className="font-medium text-yellow-800 dark:text-yellow-400">Applied Discounts:</p>
-                      <ul className="mt-1 text-sm">
-                        {formData.nonProfitDiscount && <li>Non-profit / Charity: 30%</li>}
-                        {formData.customDiscountPercent > 0 && (
-                          <li>Custom Discount: {formData.customDiscountPercent}%</li>
-                        )}
-                      </ul>
-                    </div>
+              {/* Discounts Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Discounts</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="nonProfitDiscount"
+                      checked={formData.nonProfitDiscount}
+                      onCheckedChange={handleNonProfitDiscountChange}
+                    />
+                    <Label htmlFor="nonProfitDiscount" className="text-sm font-normal cursor-pointer">
+                      Non-profit / Charity Discount (30%)
+                    </Label>
                   </div>
-                )}
+                  <div className="text-xs text-muted-foreground ml-6">
+                    Requires proof of non-profit status. Documentation will be requested after quotation.
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="customDiscountPercent">Custom Discount (%)</Label>
+                      <Input
+                        id="customDiscountPercent"
+                        name="customDiscountPercent"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={formData.customDiscountPercent}
+                        onChange={handleCustomDiscountChange}
+                        placeholder="0"
+                      />
+                    </div>
+                    {(formData.nonProfitDiscount || formData.customDiscountPercent > 0) && (
+                      <div className="space-y-2 flex items-end">
+                        <div className="p-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md text-sm w-full">
+                          <p className="font-medium text-yellow-800 dark:text-yellow-400">Applied Discounts:</p>
+                          <ul className="mt-1 text-sm">
+                            {formData.nonProfitDiscount && <li>Non-profit / Charity: 30%</li>}
+                            {formData.customDiscountPercent > 0 && (
+                              <li>Custom Discount: {formData.customDiscountPercent}%</li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </CardContent>
-
-            <CardFooter className="flex justify-between">
-              <Button variant="outline" onClick={() => router.push("/")}>
-                Cancel
-              </Button>
-              <div className="flex flex-col items-end">
-                <div className="text-xs text-muted-foreground mb-2">
-                  <span className="text-red-500">*</span> Required fields
-                </div>
-                <Button
-                  className="bg-yellow-500 hover:bg-yellow-600"
-                  onClick={generatePDF}
-                  disabled={!isFormValid() || isGenerating || selectedBusinessSize?.contactRequired}
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating PDF...
-                    </>
-                  ) : selectedBusinessSize?.contactRequired ? (
-                    "Contact YTF for Custom Pricing"
-                  ) : (
-                    <>
-                      <Download className="mr-2 h-4 w-4" />
-                      Download PDF
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardFooter>
           </Card>
         </div>
 

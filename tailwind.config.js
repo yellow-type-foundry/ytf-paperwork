@@ -65,6 +65,9 @@ module.exports = {
           yellow: "hsl(var(--ytf-yellow))",
           dark: "hsl(var(--ytf-dark))",
         },
+        // Add bgPrimary and outlinePrimary for Figma design
+        bgPrimary: "#E8EADD",
+        outlinePrimary: "#CCD0B3",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { ModeToggle } from "@/components/mode-toggle"
 
 export default function Header() {
   return (
@@ -19,7 +18,6 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <ModeToggle />
         </div>
       </div>
     </header>
