@@ -226,12 +226,12 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   notesSection: {
-    flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 4,
-    paddingBottom: 4,
+    alignItems: 'center',
+    paddingHorizontal: 16,
     paddingTop: 4,
+    paddingBottom: 4,
+    gap: 4,
     marginBottom: 0,
   },
   notesLabel: {
@@ -241,10 +241,10 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   notesText: {
-    fontFamily: 'YTF Grand 123',
-    fontSize: 7,
-    lineHeight: 1.4,
+    ...bodySecondaryStyle,
     textAlign: 'center',
+    maxWidth: '70%',
+    alignSelf: 'center',
   },
   footer: {
     flexDirection: 'row',
@@ -332,16 +332,31 @@ const PageTitle = ({ children }: { children: React.ReactNode }) => (
 const PageInfoTop = ({ quotationNumber, formattedDate }: { quotationNumber: string; formattedDate: string }) => (
   <View style={{
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
     borderTopWidth: 0.3,
     borderBottomWidth: 0.3,
     borderColor: COLORS.outlinePrimary,
   }}>
-    <Text style={[styles.footnote, { textTransform: 'uppercase' }]}>Yellow Type Foundry</Text>
-    <Text style={[styles.footnote, { textTransform: 'uppercase' }]}>{`Quotation No. ${quotationNumber}`}</Text>
-    <Text style={[styles.footnote, { textTransform: 'uppercase' }]}>{`Issued on ${formattedDate}`}</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase', width: 150 }]}>Yellow Type Foundry</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase', flex: 1, textAlign: 'center' }]}>{`Quotation No. ${quotationNumber}`}</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase', width: 150, textAlign: 'right' }]}>{`Issued on ${formattedDate}`}</Text>
+  </View>
+)
+
+// PageInfoBottom component
+const PageInfoBottom = () => (
+  <View style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
+    borderColor: COLORS.outlinePrimary,
+  }}>
+    <Text style={[styles.footnote, { textTransform: 'uppercase', width: 150 }]}>©2025 YELLOW TYPE FOUNDRY</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase', flex: 1, textAlign: 'center' }]}>YELLOWTYPE.COM</Text>
+    <Text style={[styles.footnote, { textTransform: 'uppercase', width: 150, textAlign: 'right' }]}>STRICTLY CONFIDENTIAL</Text>
   </View>
 )
 
@@ -441,6 +456,26 @@ const TotalRow = ({ total }: { total: number }) => (
   </View>
 )
 
+// ExtensionsRow component
+const ExtensionsRow = ({ included = '', excluded = '' }: { included?: string; excluded?: string }) => (
+  <View style={{ flex: 1, flexDirection: 'row', minHeight: 32, borderBottomWidth: 0.3, borderColor: COLORS.outlinePrimary, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+    {/* Included cell */}
+    <View style={{ flex: 1, padding: 8 }}>
+      <Text style={[styles.footnote, { textAlign: 'left', textTransform: 'uppercase', color: COLORS.contentSecondary }]}>EXTENSIONS — INCLUDED</Text>
+      {included ? (
+        <Text style={[styles.bodySecondary, { textAlign: 'left', marginTop: 2 }]}>{included}</Text>
+      ) : null}
+    </View>
+    {/* Excluded cell */}
+    <View style={{ flex: 1, padding: 8 }}>
+      <Text style={[styles.footnote, { textAlign: 'right', textTransform: 'uppercase', color: COLORS.contentSecondary }]}>EXTENSIONS — EXCLUDED</Text>
+      {excluded ? (
+        <Text style={[styles.bodySecondary, { textAlign: 'right', marginTop: 2 }]}>{excluded}</Text>
+      ) : null}
+    </View>
+  </View>
+)
+
 export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) => {
   // Ensure we have valid data
   const safeData: QuotationData = {
@@ -465,7 +500,7 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={{ ...styles.page, flexDirection: 'column', flex: 1 }}>
         {/* Logo at the top */}
         <LogoComponent />
         {/* Header Row */}
@@ -492,21 +527,16 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
           <TotalSummaryRow total={safeData.subtotal} />
           <TotalRow total={safeData.total} />
         </View>
-
-        {/* Notes Section */}
-        <View style={styles.notesSection}>
-          <Text style={styles.notesLabel}>Notes</Text>
-          <Text style={styles.notesText}>
-            {`This quotation is valid until ${new Date(new Date(safeData.quotationDate).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}. Payment terms are net 30 days. All prices are in USD and exclude VAT. For any questions, please contact us at hi@yellowtype.com`}
-          </Text>
+        <View style={{ flex: 1, flexDirection: 'column' }}>
+          <ExtensionsRow included={data?.extensionsIncluded || ''} excluded={data?.extensionsExcluded || ''} />
+          <View style={styles.notesSection}>
+            <Text style={styles.notesLabel}>Notes</Text>
+            <Text style={styles.notesText}>
+              {`All offers and license agreements from Yellow Type Foundry are governed exclusively by Yellow Type Foundry's General Terms and Conditions (EULA), with any conflicting terms from the licensees' general conditions expressly excluded.`}
+            </Text>
+          </View>
         </View>
-
-        {/* Footer Section */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>©2025 YELLOW TYPE FOUNDRY</Text>
-          <Text style={styles.footerText}>YELLOWTYPE.COM</Text>
-          <Text style={styles.footerText}>STRICTLY CONFIDENTIAL</Text>
-        </View>
+        <PageInfoBottom />
       </Page>
     </Document>
   )
