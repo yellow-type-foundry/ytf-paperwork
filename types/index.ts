@@ -92,6 +92,7 @@ export interface QuotationData {
   }>
   subtotal: number
   total: number
+  companyName?: string
   extensionsIncluded?: string
   extensionsExcluded?: string
 } 

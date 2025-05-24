@@ -25,6 +25,8 @@ import {
 } from "@/utils/typeface-data"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { InputField } from "@/components/ui/input-field"
+import { SelectField } from "@/components/ui/select-field"
 
 const PDFPreview = dynamic(() => import("@/components/pdf-preview"), { ssr: false })
 
@@ -56,9 +58,9 @@ interface FormData {
   tax: number
   total: number
   billingAddress: {
-    streetNumber: string
-    address1: string
-    address2: string
+    companyName: string
+    street: string
+    suburb: string
     city: string
     state: string
     postalCode: string
@@ -159,9 +161,9 @@ export default function QuotationPage() {
       0
     ) || 0, // Set initial total from calculated amount
     billingAddress: {
-      streetNumber: "",
-      address1: "",
-      address2: "",
+      companyName: "",
+      street: "",
+      suburb: "",
       city: "",
       state: "",
       postalCode: "",
@@ -912,10 +914,22 @@ export default function QuotationPage() {
   // Get the selected business size object
   const selectedBusinessSize = businessSizes.find((size) => size.id === formData.businessSize)
 
+  // Add this handler above the return statement
+  const handleCountryChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      billingAddress: {
+        ...prev.billingAddress,
+        country: value,
+      },
+    }));
+  };
+
   return (
     <div className="container mx-auto py-10">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left column: Form */}
+        <div className="w-full lg:w-1/2">
           <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
             <CardContent className="space-y-4">
               {/* Removed Quotation Number and Issue Date fields from the UI as requested */}
@@ -924,170 +938,314 @@ export default function QuotationPage() {
 
           <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
             <CardHeader className="p-0">
-              <div className="heading-mono pl-0 pr-2 py-2 border-b border-b-[0.5px] border-outlinePrimary mb-4" style={{ background: 'none' }}>
+              <div className="ytf-section-heading pl-0 pr-2 py-2 border-b border-b-[0.5px] border-outlinePrimary mb-4" style={{ background: 'none' }}>
                 Licensee / End User Information
               </div>
             </CardHeader>
             <CardContent className="p-0 space-y-4">
               <div className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="clientName" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        Client Name <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="clientName"
-                        name="clientName"
-                        value={formData.clientName}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        placeholder="Herb Lubalin"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                        autoComplete="off"
-                      />
-                    </div>
-                    {errors.clientName && touchedFields.clientName && (
-                      <div className="text-red-500 text-sm flex items-center mt-1">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.clientName}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="clientEmail" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        Email <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="clientEmail"
-                        name="clientEmail"
-                        type="email"
-                        value={formData.clientEmail}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        placeholder="name@email.com"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                        autoComplete="email"
-                      />
-                    </div>
-                    {errors.clientEmail && touchedFields.clientEmail && (
-                      <div className="text-red-500 text-sm flex items-center mt-1">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.clientEmail}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <InputField
+                  label="CLIENT NAME *"
+                  name="clientName"
+                  value={formData.clientName}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  placeholder="Herb Lubalin"
+                  required
+                  autoComplete="off"
+                  error={errors.clientName}
+                  touched={touchedFields.clientName}
+                />
               </div>
               <div className="mb-6">
-                <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                  <label htmlFor="businessSize" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                    Business Size <span className="text-red-500 ml-1">*</span>
+                <InputField
+                  label="EMAIL *"
+                  name="clientEmail"
+                  value={formData.clientEmail}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  placeholder="name@email.com"
+                  required
+                  autoComplete="email"
+                  error={errors.clientEmail}
+                  touched={touchedFields.clientEmail}
+                />
+              </div>
+              <div className="mb-6">
+                <InputField
+                  label="COMPANY NAME"
+                  name="billingAddress.companyName"
+                  value={formData.billingAddress.companyName}
+                  onChange={handleInputChange}
+                  placeholder="Company name"
+                  autoComplete="organization"
+                />
+              </div>
+              <div className="mb-6">
+                <div className="flex items-center border-b-[0.5px] border-black pb-[12px] w-full" style={{ gap: '12px' }}>
+                  <label htmlFor="businessSize" className="ytf-form-label uppercase flex-shrink-0 inline-flex items-center" style={{ minHeight: '21px' }}>
+                    BUSINESS SIZE <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    id="businessSize"
-                    name="businessSize"
+                  <Select
                     value={formData.businessSize}
-                    onChange={e => handleBusinessSizeChange(e.target.value)}
-                    onBlur={handleBusinessSizeBlur}
-                    className="ytf-form-input flex-1 bg-transparent border-none outline-none appearance-none"
+                    onValueChange={handleBusinessSizeChange}
+                    name="businessSize"
                   >
-                    <option value="" disabled>Select business size</option>
-                    {businessSizes.map((size) => (
-                      <option key={size.id} value={size.id}>
-                        {size.name}{size.multiplier ? ` (${size.multiplier}×)` : ""}{size.description ? ` – ${size.description}` : ""}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="businessSize" className="ytf-form-input flex-1 w-full bg-transparent border-none !border-b-0 outline-none placeholder:ytf-form-input" style={{ fontFamily: 'YTF Grand 123, monospace', fontSize: '12px', lineHeight: '1.4', height: '18px', padding: 0 }}>
+                      <SelectValue placeholder="Select Business Size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {businessSizes.map((size) => (
+                        <SelectItem key={size.id} value={size.id}>
+                          {size.name}{size.multiplier ? ` (${size.multiplier}×)` : ""}{size.description ? ` – ${size.description}` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 {errors.businessSize && touchedFields.businessSize && (
-                  <div className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.businessSize}
-                  </div>
+                  <div className="ytf-form-error mt-1">{errors.businessSize}</div>
                 )}
               </div>
               <div className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="billingAddress-country" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        Country <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="billingAddress-country"
-                        name="billingAddress.country"
-                        value={formData.billingAddress.country}
-                        onChange={handleInputChange}
-                        placeholder="Country"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="billingAddress-city" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        City <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="billingAddress-city"
-                        name="billingAddress.city"
-                        value={formData.billingAddress.city}
-                        onChange={handleInputChange}
-                        placeholder="City"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="billingAddress-state" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        State/Province/Region <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="billingAddress-state"
-                        name="billingAddress.state"
-                        value={formData.billingAddress.state}
-                        onChange={handleInputChange}
-                        placeholder="State/Province/Region"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                      />
-                    </div>
-                  </div>
+                <div className="flex items-center border-b-[0.5px] border-black pb-[12px] w-full" style={{ gap: '12px' }}>
+                  <label htmlFor="billingAddress.country" className="ytf-form-label uppercase flex-shrink-0 inline-flex items-center" style={{ minHeight: '21px' }}>
+                    COUNTRY
+                  </label>
+                  <Select
+                    value={formData.billingAddress.country}
+                    onValueChange={handleCountryChange}
+                    name="billingAddress.country"
+                  >
+                    <SelectTrigger id="billingAddress.country" className="ytf-form-input flex-1 w-full bg-transparent border-none !border-b-0 outline-none placeholder:ytf-form-input" style={{ fontFamily: 'YTF Grand 123, monospace', fontSize: '12px', lineHeight: '1.4', height: '18px', padding: 0 }}>
+                      <SelectValue placeholder="Select Country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AF">Afghanistan</SelectItem>
+                      <SelectItem value="AL">Albania</SelectItem>
+                      <SelectItem value="DZ">Algeria</SelectItem>
+                      <SelectItem value="AD">Andorra</SelectItem>
+                      <SelectItem value="AO">Angola</SelectItem>
+                      <SelectItem value="AG">Antigua and Barbuda</SelectItem>
+                      <SelectItem value="AR">Argentina</SelectItem>
+                      <SelectItem value="AM">Armenia</SelectItem>
+                      <SelectItem value="AU">Australia</SelectItem>
+                      <SelectItem value="AT">Austria</SelectItem>
+                      <SelectItem value="AZ">Azerbaijan</SelectItem>
+                      <SelectItem value="BS">Bahamas</SelectItem>
+                      <SelectItem value="BH">Bahrain</SelectItem>
+                      <SelectItem value="BD">Bangladesh</SelectItem>
+                      <SelectItem value="BB">Barbados</SelectItem>
+                      <SelectItem value="BY">Belarus</SelectItem>
+                      <SelectItem value="BE">Belgium</SelectItem>
+                      <SelectItem value="BZ">Belize</SelectItem>
+                      <SelectItem value="BJ">Benin</SelectItem>
+                      <SelectItem value="BT">Bhutan</SelectItem>
+                      <SelectItem value="BO">Bolivia</SelectItem>
+                      <SelectItem value="BA">Bosnia and Herzegovina</SelectItem>
+                      <SelectItem value="BW">Botswana</SelectItem>
+                      <SelectItem value="BR">Brazil</SelectItem>
+                      <SelectItem value="BN">Brunei</SelectItem>
+                      <SelectItem value="BG">Bulgaria</SelectItem>
+                      <SelectItem value="BF">Burkina Faso</SelectItem>
+                      <SelectItem value="BI">Burundi</SelectItem>
+                      <SelectItem value="KH">Cambodia</SelectItem>
+                      <SelectItem value="CM">Cameroon</SelectItem>
+                      <SelectItem value="CA">Canada</SelectItem>
+                      <SelectItem value="CV">Cape Verde</SelectItem>
+                      <SelectItem value="CF">Central African Republic</SelectItem>
+                      <SelectItem value="TD">Chad</SelectItem>
+                      <SelectItem value="CL">Chile</SelectItem>
+                      <SelectItem value="CN">China</SelectItem>
+                      <SelectItem value="CO">Colombia</SelectItem>
+                      <SelectItem value="KM">Comoros</SelectItem>
+                      <SelectItem value="CG">Congo</SelectItem>
+                      <SelectItem value="CR">Costa Rica</SelectItem>
+                      <SelectItem value="HR">Croatia</SelectItem>
+                      <SelectItem value="CU">Cuba</SelectItem>
+                      <SelectItem value="CY">Cyprus</SelectItem>
+                      <SelectItem value="CZ">Czech Republic</SelectItem>
+                      <SelectItem value="DK">Denmark</SelectItem>
+                      <SelectItem value="DJ">Djibouti</SelectItem>
+                      <SelectItem value="DM">Dominica</SelectItem>
+                      <SelectItem value="DO">Dominican Republic</SelectItem>
+                      <SelectItem value="EC">Ecuador</SelectItem>
+                      <SelectItem value="EG">Egypt</SelectItem>
+                      <SelectItem value="SV">El Salvador</SelectItem>
+                      <SelectItem value="GQ">Equatorial Guinea</SelectItem>
+                      <SelectItem value="ER">Eritrea</SelectItem>
+                      <SelectItem value="EE">Estonia</SelectItem>
+                      <SelectItem value="ET">Ethiopia</SelectItem>
+                      <SelectItem value="FJ">Fiji</SelectItem>
+                      <SelectItem value="FI">Finland</SelectItem>
+                      <SelectItem value="FR">France</SelectItem>
+                      <SelectItem value="GA">Gabon</SelectItem>
+                      <SelectItem value="GM">Gambia</SelectItem>
+                      <SelectItem value="GE">Georgia</SelectItem>
+                      <SelectItem value="DE">Germany</SelectItem>
+                      <SelectItem value="GH">Ghana</SelectItem>
+                      <SelectItem value="GR">Greece</SelectItem>
+                      <SelectItem value="GD">Grenada</SelectItem>
+                      <SelectItem value="GT">Guatemala</SelectItem>
+                      <SelectItem value="GN">Guinea</SelectItem>
+                      <SelectItem value="GW">Guinea-Bissau</SelectItem>
+                      <SelectItem value="GY">Guyana</SelectItem>
+                      <SelectItem value="HT">Haiti</SelectItem>
+                      <SelectItem value="HN">Honduras</SelectItem>
+                      <SelectItem value="HU">Hungary</SelectItem>
+                      <SelectItem value="IS">Iceland</SelectItem>
+                      <SelectItem value="IN">India</SelectItem>
+                      <SelectItem value="ID">Indonesia</SelectItem>
+                      <SelectItem value="IR">Iran</SelectItem>
+                      <SelectItem value="IQ">Iraq</SelectItem>
+                      <SelectItem value="IE">Ireland</SelectItem>
+                      <SelectItem value="IL">Israel</SelectItem>
+                      <SelectItem value="IT">Italy</SelectItem>
+                      <SelectItem value="JM">Jamaica</SelectItem>
+                      <SelectItem value="JP">Japan</SelectItem>
+                      <SelectItem value="JO">Jordan</SelectItem>
+                      <SelectItem value="KZ">Kazakhstan</SelectItem>
+                      <SelectItem value="KE">Kenya</SelectItem>
+                      <SelectItem value="KI">Kiribati</SelectItem>
+                      <SelectItem value="KP">North Korea</SelectItem>
+                      <SelectItem value="KR">South Korea</SelectItem>
+                      <SelectItem value="KW">Kuwait</SelectItem>
+                      <SelectItem value="KG">Kyrgyzstan</SelectItem>
+                      <SelectItem value="LA">Laos</SelectItem>
+                      <SelectItem value="LV">Latvia</SelectItem>
+                      <SelectItem value="LB">Lebanon</SelectItem>
+                      <SelectItem value="LS">Lesotho</SelectItem>
+                      <SelectItem value="LR">Liberia</SelectItem>
+                      <SelectItem value="LY">Libya</SelectItem>
+                      <SelectItem value="LI">Liechtenstein</SelectItem>
+                      <SelectItem value="LT">Lithuania</SelectItem>
+                      <SelectItem value="LU">Luxembourg</SelectItem>
+                      <SelectItem value="MG">Madagascar</SelectItem>
+                      <SelectItem value="MW">Malawi</SelectItem>
+                      <SelectItem value="MY">Malaysia</SelectItem>
+                      <SelectItem value="MV">Maldives</SelectItem>
+                      <SelectItem value="ML">Mali</SelectItem>
+                      <SelectItem value="MT">Malta</SelectItem>
+                      <SelectItem value="MH">Marshall Islands</SelectItem>
+                      <SelectItem value="MR">Mauritania</SelectItem>
+                      <SelectItem value="MU">Mauritius</SelectItem>
+                      <SelectItem value="MX">Mexico</SelectItem>
+                      <SelectItem value="FM">Micronesia</SelectItem>
+                      <SelectItem value="MD">Moldova</SelectItem>
+                      <SelectItem value="MC">Monaco</SelectItem>
+                      <SelectItem value="MN">Mongolia</SelectItem>
+                      <SelectItem value="ME">Montenegro</SelectItem>
+                      <SelectItem value="MA">Morocco</SelectItem>
+                      <SelectItem value="MZ">Mozambique</SelectItem>
+                      <SelectItem value="MM">Myanmar</SelectItem>
+                      <SelectItem value="NA">Namibia</SelectItem>
+                      <SelectItem value="NR">Nauru</SelectItem>
+                      <SelectItem value="NP">Nepal</SelectItem>
+                      <SelectItem value="NL">Netherlands</SelectItem>
+                      <SelectItem value="NZ">New Zealand</SelectItem>
+                      <SelectItem value="NI">Nicaragua</SelectItem>
+                      <SelectItem value="NE">Niger</SelectItem>
+                      <SelectItem value="NG">Nigeria</SelectItem>
+                      <SelectItem value="NO">Norway</SelectItem>
+                      <SelectItem value="OM">Oman</SelectItem>
+                      <SelectItem value="PK">Pakistan</SelectItem>
+                      <SelectItem value="PW">Palau</SelectItem>
+                      <SelectItem value="PS">Palestine</SelectItem>
+                      <SelectItem value="PA">Panama</SelectItem>
+                      <SelectItem value="PG">Papua New Guinea</SelectItem>
+                      <SelectItem value="PY">Paraguay</SelectItem>
+                      <SelectItem value="PE">Peru</SelectItem>
+                      <SelectItem value="PH">Philippines</SelectItem>
+                      <SelectItem value="PL">Poland</SelectItem>
+                      <SelectItem value="PT">Portugal</SelectItem>
+                      <SelectItem value="QA">Qatar</SelectItem>
+                      <SelectItem value="RO">Romania</SelectItem>
+                      <SelectItem value="RU">Russia</SelectItem>
+                      <SelectItem value="RW">Rwanda</SelectItem>
+                      <SelectItem value="KN">Saint Kitts and Nevis</SelectItem>
+                      <SelectItem value="LC">Saint Lucia</SelectItem>
+                      <SelectItem value="VC">Saint Vincent and the Grenadines</SelectItem>
+                      <SelectItem value="WS">Samoa</SelectItem>
+                      <SelectItem value="SM">San Marino</SelectItem>
+                      <SelectItem value="ST">São Tomé and Príncipe</SelectItem>
+                      <SelectItem value="SA">Saudi Arabia</SelectItem>
+                      <SelectItem value="SN">Senegal</SelectItem>
+                      <SelectItem value="RS">Serbia</SelectItem>
+                      <SelectItem value="SC">Seychelles</SelectItem>
+                      <SelectItem value="SL">Sierra Leone</SelectItem>
+                      <SelectItem value="SG">Singapore</SelectItem>
+                      <SelectItem value="SK">Slovakia</SelectItem>
+                      <SelectItem value="SI">Slovenia</SelectItem>
+                      <SelectItem value="SB">Solomon Islands</SelectItem>
+                      <SelectItem value="SO">Somalia</SelectItem>
+                      <SelectItem value="ZA">South Africa</SelectItem>
+                      <SelectItem value="SS">South Sudan</SelectItem>
+                      <SelectItem value="ES">Spain</SelectItem>
+                      <SelectItem value="LK">Sri Lanka</SelectItem>
+                      <SelectItem value="SD">Sudan</SelectItem>
+                      <SelectItem value="SR">Suriname</SelectItem>
+                      <SelectItem value="SE">Sweden</SelectItem>
+                      <SelectItem value="CH">Switzerland</SelectItem>
+                      <SelectItem value="SY">Syria</SelectItem>
+                      <SelectItem value="TW">Taiwan</SelectItem>
+                      <SelectItem value="TJ">Tajikistan</SelectItem>
+                      <SelectItem value="TZ">Tanzania</SelectItem>
+                      <SelectItem value="TH">Thailand</SelectItem>
+                      <SelectItem value="TL">Timor-Leste</SelectItem>
+                      <SelectItem value="TG">Togo</SelectItem>
+                      <SelectItem value="TO">Tonga</SelectItem>
+                      <SelectItem value="TT">Trinidad and Tobago</SelectItem>
+                      <SelectItem value="TN">Tunisia</SelectItem>
+                      <SelectItem value="TR">Turkey</SelectItem>
+                      <SelectItem value="TM">Turkmenistan</SelectItem>
+                      <SelectItem value="TV">Tuvalu</SelectItem>
+                      <SelectItem value="UG">Uganda</SelectItem>
+                      <SelectItem value="UA">Ukraine</SelectItem>
+                      <SelectItem value="AE">United Arab Emirates</SelectItem>
+                      <SelectItem value="GB">United Kingdom</SelectItem>
+                      <SelectItem value="US">United States</SelectItem>
+                      <SelectItem value="UY">Uruguay</SelectItem>
+                      <SelectItem value="UZ">Uzbekistan</SelectItem>
+                      <SelectItem value="VU">Vanuatu</SelectItem>
+                      <SelectItem value="VA">Vatican City</SelectItem>
+                      <SelectItem value="VE">Venezuela</SelectItem>
+                      <SelectItem value="VN">Vietnam</SelectItem>
+                      <SelectItem value="YE">Yemen</SelectItem>
+                      <SelectItem value="ZM">Zambia</SelectItem>
+                      <SelectItem value="ZW">Zimbabwe</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="billingAddress-streetNumber" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        Street number <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="billingAddress-streetNumber"
-                        name="billingAddress.streetNumber"
-                        value={formData.billingAddress.streetNumber}
-                        onChange={handleInputChange}
-                        placeholder="Street number"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-4 border-b-[0.5px] border-black pb-2">
-                      <label htmlFor="billingAddress-postalCode" className="ytf-form-label flex-shrink-0" style={{ minWidth: '8rem' }}>
-                        Postal/ZIP Code <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <input
-                        id="billingAddress-postalCode"
-                        name="billingAddress.postalCode"
-                        value={formData.billingAddress.postalCode}
-                        onChange={handleInputChange}
-                        placeholder="Postal/ZIP Code"
-                        className="ytf-form-input flex-1 bg-transparent border-none outline-none placeholder:ytf-form-input"
-                      />
-                    </div>
-                  </div>
-                </div>
+              </div>
+              <div className="mb-6">
+                <InputField
+                  label="CITY"
+                  name="billingAddress.city"
+                  value={formData.billingAddress.city}
+                  onChange={handleInputChange}
+                  placeholder="City"
+                  autoComplete="address-level2"
+                />
+              </div>
+              <div className="mb-6">
+                <InputField
+                  label="STREET"
+                  name="billingAddress.street"
+                  value={formData.billingAddress.street}
+                  onChange={handleInputChange}
+                  placeholder="Street"
+                  autoComplete="address-line1"
+                />
+              </div>
+              <div className="mb-6">
+                <InputField
+                  label="POST CODE"
+                  name="billingAddress.postalCode"
+                  value={formData.billingAddress.postalCode}
+                  onChange={handleInputChange}
+                  placeholder="Post code"
+                  autoComplete="postal-code"
+                />
               </div>
             </CardContent>
           </Card>
@@ -1095,7 +1253,7 @@ export default function QuotationPage() {
           <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
             <CardHeader className="p-0">
               <div className="flex items-center justify-between w-full pl-0 pr-2 py-2 border-b border-b-[0.5px] border-outlinePrimary mb-4" style={{ background: 'none' }}>
-                <span className="heading-mono">Typefaces</span>
+                <span className="ytf-section-heading">Typefaces</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -1125,7 +1283,7 @@ export default function QuotationPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2">
                       <Label htmlFor={`item-${index}-family`} className="flex items-center">
-                        Typeface <span className="text-red-500 ml-1">*</span>
+                        Typeface <span className="text-red-500">*</span>
                       </Label>
                       <Select
                         value={item.typefaceFamily}
@@ -1163,7 +1321,7 @@ export default function QuotationPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor={`item-${index}-variant`} className="flex items-center">
-                        Style <span className="text-red-500 ml-1">*</span>
+                        Style <span className="text-red-500">*</span>
                       </Label>
                       <Select
                         value={item.typefaceVariant}
@@ -1245,7 +1403,7 @@ export default function QuotationPage() {
 
                   <div className="space-y-2">
                     <Label className="flex items-center">
-                      File Format <span className="text-red-500 ml-1">*</span>
+                      File Format <span className="text-red-500">*</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -1400,7 +1558,8 @@ export default function QuotationPage() {
           </Card>
         </div>
 
-        <div className="sticky">
+        {/* Right column: PDF Preview and Export */}
+        <div className="w-full lg:w-1/2 lg:sticky lg:top-10">
           <Card className="p-0 rounded-none bg-transparent shadow-none border-0">
             <CardContent className="p-0">
               {isClient ? (

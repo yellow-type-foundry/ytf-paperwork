@@ -41,37 +41,7 @@
     --ytf-dark: 220 84% 5%;
 
     /* Figma design background color */
-    --ytf-bg: 60 20% 90%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ytf-bg: 0 0% 100%;
   }
 }
 
@@ -80,7 +50,8 @@
     @apply border-outlinePrimary;
   }
   body {
-    @apply bg-bgPrimary text-foreground;
+    @apply text-foreground;
+    background-color: #fff !important;
   }
 
   /* Custom font classes */
@@ -105,4 +76,119 @@
   letter-spacing: 0.1em;
   line-height: 1;
   font-weight: 400;
+}
+
+.ytf-form-error {
+  font-family: 'YTF Grand 123', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #F73E3E;
+}
+
+[data-state="open"] .ytf-select-chevron {
+  transform: rotate(180deg);
+}
+
+/* Typography styles matching Figma design */
+
+/* Import custom fonts if they're not already imported in fonts.ts */
+@font-face {
+  font-family: "YTF Oldman";
+  src: url("/fonts/YTFOldman-Bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "YTF Vang Mono";
+  src: url("/fonts/YTFVangMono-Regular.woff2") format("woff2"),
+       url("/fonts/YTFVangMono-Regular.woff") format("woff"),
+       url("/fonts/YTFVangMono-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "YTF Grand 123";
+  src: url("/fonts/YTFGrand123-Regular.woff2") format("woff2"),
+       url("/fonts/YTFGrand123-Regular.woff") format("woff"),
+       url("/fonts/YTFGrand123-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Exact typography classes from Figma */
+.ytf-title {
+  font-family: "YTF Oldman", sans-serif;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.ytf-label {
+  font-family: "YTF VangMono", monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+.ytf-body {
+  font-family: "YTF Grand", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.0025em;
+  font-weight: normal;
+}
+
+.ytf-subtotal {
+  font-family: "YTF Grand", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.0025em;
+  font-weight: normal;
+}
+
+.ytf-total {
+  font-family: "YTF Grand", sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.ytf-footer {
+  font-family: "YTF VangMono", monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+/* Typeface-specific styles */
+.ytf-eon {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.ytf-cafune {
+  font-family: serif;
+  font-style: italic;
+}
+
+.ytf-giong {
+  font-family: serif;
+  font-weight: normal;
+}
+
+/* Section heading style */
+.ytf-section-heading {
+  font-family: "YTF Oldman", sans-serif;
+  font-size: 40px;
+  line-height: 1.0;
+  letter-spacing: -0.9;
+  font-weight: bold;
+  text-transform: uppercase;
 }

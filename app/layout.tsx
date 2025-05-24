@@ -1,6 +1,5 @@
 import type React from "react"
 import "@/app/globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import { ytfGrand, ytfOldman, ytfVangMono } from "./fonts"
 
@@ -22,10 +21,8 @@ export default function RootLayout({
       className={`${ytfGrand.variable} ${ytfOldman.variable} ${ytfVangMono.variable}`}
     >
       <body>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <Header />
-          <main>{children}</main>
-        </ThemeProvider>
+        <Header />
+        <main>{children}</main>
       </body>
     </html>
   )

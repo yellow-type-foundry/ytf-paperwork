@@ -21,6 +21,7 @@ function PDFPreview({ formData }: { formData: any }) {
           [formData.billingAddress?.city, formData.billingAddress?.state, formData.billingAddress?.postalCode].filter(Boolean).join(", "),
           formData.billingAddress?.country
         ].filter(Boolean).join("\n"),
+        companyName: formData.billingAddress?.companyName || '',
         businessSize: typeof formData.businessSize === 'string'
           ? businessSizes.find(size => size.id === formData.businessSize) || { name: '', description: '' }
           : formData.businessSize,
