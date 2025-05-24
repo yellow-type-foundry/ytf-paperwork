@@ -36,20 +36,38 @@ Font.register({
   fontWeight: "normal"
 })
 
+// Value tokens
+const COLORS = {
+  bgPrimary: "#E8EADD",
+  bgSecondary: "#F4F6E9",
+  infoBlock: "#E8EADD",
+  tableHeader: "#E8EADD",
+  totalSection: "#F4F6E9",
+  border: "#D6D3D1",
+  outlinePrimary: "#CCD0B3",
+};
+const SPACING = {
+  pagePadding: 0,
+  horizontal: 4,
+  vertical: 4,
+  gap: 4,
+  borderRadius: 4,
+};
+
 // Create styles
 const styles = StyleSheet.create({
   page: {
-    padding: 0,
+    padding: SPACING.pagePadding,
     fontFamily: "YTF Grand 123",
-    backgroundColor: "#E7E5E4",
+    backgroundColor: COLORS.bgPrimary,
   },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 32,
-    paddingTop: 18,
-    paddingBottom: 6,
+    paddingHorizontal: SPACING.horizontal,
+    paddingTop: SPACING.vertical,
+    paddingBottom: SPACING.vertical,
   },
   headerText: {
     fontFamily: "YTF Vang Mono",
@@ -59,25 +77,25 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: "YTF Oldman",
-    fontSize: 38,
+    fontSize: 62,
     fontWeight: "bold",
     textTransform: "uppercase",
     textAlign: "center",
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: "#D6D3D1",
-    paddingVertical: 12,
+    borderColor: COLORS.outlinePrimary,
+    paddingVertical: SPACING.vertical,
     letterSpacing: -0.5,
-    marginHorizontal: 32,
-    marginBottom: 8,
+    marginHorizontal: SPACING.horizontal,
+    marginBottom: SPACING.vertical,
   },
   infoBlock: {
     flexDirection: "row",
-    gap: 32,
-    paddingHorizontal: 32,
-    paddingVertical: 8,
-    backgroundColor: "#E7E5E4",
-    marginBottom: 8,
+    gap: SPACING.gap,
+    paddingHorizontal: SPACING.horizontal,
+    paddingVertical: SPACING.vertical,
+    backgroundColor: COLORS.infoBlock,
+    marginBottom: SPACING.vertical,
   },
   infoCol: {
     flex: 1,
@@ -95,7 +113,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.2,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 4,
   },
   row: {
     flexDirection: "row",
@@ -110,23 +128,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   table: {
-    marginHorizontal: 32,
+    marginHorizontal: 4,
     marginBottom: 0,
   },
   tableHeader: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#000",
+    borderBottomColor: COLORS.outlinePrimary,
     paddingBottom: 4,
-    marginBottom: 2,
-    backgroundColor: "#E7E5E4",
+    marginBottom: 4,
+    backgroundColor: COLORS.tableHeader,
   },
   tableRow: {
     flexDirection: "row",
     minHeight: 24,
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#D6D3D1",
+    borderBottomColor: COLORS.outlinePrimary,
+    marginBottom: 4,
   },
   tableCell: {
     fontSize: 10,
@@ -136,12 +155,12 @@ const styles = StyleSheet.create({
     fontFamily: "YTF Grand 123",
   },
   totalSection: {
-    backgroundColor: "#F7FEE7",
-    marginHorizontal: 32,
-    marginTop: 16,
-    marginBottom: 16,
-    padding: 12,
-    borderRadius: 4,
+    backgroundColor: COLORS.bgSecondary,
+    marginHorizontal: SPACING.horizontal,
+    marginTop: SPACING.vertical,
+    marginBottom: SPACING.vertical,
+    padding: SPACING.vertical,
+    borderRadius: SPACING.borderRadius,
   },
   totalRow: {
     flexDirection: "row",
@@ -169,9 +188,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    paddingHorizontal: 32,
-    paddingBottom: 16,
-    paddingTop: 12,
+    paddingHorizontal: 4,
+    paddingBottom: 4,
+    paddingTop: 4,
   },
   notesLabel: {
     fontFamily: 'YTF Vang Mono',
@@ -189,8 +208,8 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 32,
-    paddingBottom: 12,
+    paddingHorizontal: 4,
+    paddingBottom: 4,
   },
   footerText: {
     fontFamily: 'YTF Vang Mono',
@@ -202,6 +221,34 @@ const styles = StyleSheet.create({
 interface QuotationDocumentProps {
   data: QuotationData
 }
+
+// Reusable components
+const InfoBlock = ({ licensee }: { licensee: { name: string; email: string; address?: string } }) => (
+  <View style={styles.infoBlock}>
+    {/* Provider Info */}
+    <View style={styles.infoCol}>
+      <Text style={styles.infoLabel}>License Provider</Text>
+      <Text style={styles.infoValue}>Yellow Type Foundry Company Ltd.</Text>
+      <Text style={styles.infoValue}>No.6, Lane 36, Nguyen Hong Street</Text>
+      <Text style={styles.infoValue}>Lang Ha Ward, Dong Da District, Hanoi, Vietnam</Text>
+      <Text style={styles.infoValue}>Tax ID 0109884491</Text>
+    </View>
+    {/* Licensee Info */}
+    <View style={styles.infoCol}>
+      <Text style={styles.infoLabel}>Licensee</Text>
+      <Text style={styles.infoValue}>{licensee.name}</Text>
+      <Text style={styles.infoValue}>{licensee.email}</Text>
+      {licensee.address && <Text style={styles.infoValue}>{licensee.address}</Text>}
+    </View>
+  </View>
+)
+
+const SectionRow = ({ label, value }: { label: string; value: string }) => (
+  <View style={styles.row}>
+    <Text style={styles.label}>{label}</Text>
+    <Text style={styles.value}>{value}</Text>
+  </View>
+)
 
 export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) => {
   // Ensure we have valid data
@@ -237,43 +284,7 @@ export const QuotationDocument: React.FC<QuotationDocumentProps> = ({ data }) =>
         {/* Title */}
         <Text style={styles.title}>Typeface Licensing Quotation</Text>
         {/* Info Blocks */}
-        <View style={styles.infoBlock}>
-          {/* Provider Info */}
-          <View style={styles.infoCol}>
-            <Text style={styles.infoLabel}>License Provider</Text>
-            <Text style={styles.infoValue}>Yellow Type Foundry</Text>
-          </View>
-          {/* Licensee Info */}
-          <View style={styles.infoCol}>
-            <Text style={styles.infoLabel}>Licensee</Text>
-            <Text style={styles.infoValue}>{safeData.clientName}</Text>
-            <Text style={styles.infoValue}>{safeData.clientEmail}</Text>
-            {safeData.clientAddress && <Text style={styles.infoValue}>{safeData.clientAddress}</Text>}
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.row}>
-            <Text style={styles.label}>Name:</Text>
-            <Text style={styles.value}>{safeData.clientName}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Email:</Text>
-            <Text style={styles.value}>{safeData.clientEmail}</Text>
-          </View>
-          {safeData.clientAddress && (
-            <View style={styles.row}>
-              <Text style={styles.label}>Address:</Text>
-              <Text style={styles.value}>{safeData.clientAddress}</Text>
-            </View>
-          )}
-          {safeData.businessSize?.name && (
-            <View style={styles.row}>
-              <Text style={styles.label}>Business Size:</Text>
-              <Text style={styles.value}>{safeData.businessSize.name}</Text>
-            </View>
-          )}
-        </View>
+        <InfoBlock licensee={{ name: safeData.clientName, email: safeData.clientEmail, address: safeData.clientAddress }} />
 
         {/* Table Section */}
         <View style={styles.table}>

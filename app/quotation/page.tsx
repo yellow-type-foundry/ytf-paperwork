@@ -818,7 +818,7 @@ export default function QuotationPage() {
                     onBlur={handleBlur}
                     placeholder="name@email.com"
                     className={errors.clientEmail && touchedFields.clientEmail ? "border-red-500" : ""}
-                    autocomplete="email"
+                    autoComplete="email"
                   />
                   {errors.clientEmail && touchedFields.clientEmail && (
                     <div className="text-red-500 text-sm flex items-center mt-1">
